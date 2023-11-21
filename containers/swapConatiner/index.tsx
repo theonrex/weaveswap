@@ -1,11 +1,11 @@
 import React from "react";
 import styles from "./index.module.css";
-import NetworkDropdown from "@/components/dropdown/firstNetwork";
 import SingleCrossSwapInput from "@/components/inputs/singleCrossPayment/singleCrossSwapInput";
 import SecondNetworkDropdown from "@/components/dropdown/secondNetwork";
 import ConnectWalletPage from "@/components/connectWalletPage";
 import { useAddress } from "@thirdweb-dev/react";
 import FirstNetworkModal from "@/components/modal/firstNetworkModalPage";
+import SecondNetworkModal from "@/components/modal/secondNetworkModal";
 //SecondNetworkDropdown
 export default function SwapContainer() {
   const address = useAddress();
@@ -36,7 +36,7 @@ export default function SwapContainer() {
             <div className={styles.SwapDropDown}>
               <FirstNetworkModal />
               <h5>to</h5>
-              <NetworkDropdown />
+              <SecondNetworkModal />
             </div>
             <hr />
             <div>

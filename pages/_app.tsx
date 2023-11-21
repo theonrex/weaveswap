@@ -13,13 +13,13 @@ import {
   trustWallet,
 } from "@thirdweb-dev/react";
 import ChainContext from "@/Context/Chain";
-import { Goerli } from "@thirdweb-dev/chains";
+import { Mumbai } from "@thirdweb-dev/chains";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
-      activeChain={Goerli}
-      clientId="YOUR_CLIENT_ID"
+      activeChain={Mumbai}
+      clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet({ recommended: true }),

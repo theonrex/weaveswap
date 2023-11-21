@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useChain, Chain } from "@thirdweb-dev/react";
+import { useSwitchChain, useChain } from "@thirdweb-dev/react";
 import { Dropdown } from "flowbite-react";
 import {
   Sepolia,
@@ -9,7 +9,11 @@ import {
   AvalancheFuji,
   Mumbai,
 } from "@thirdweb-dev/chains";
-import { Button, Modal } from "flowbite-react";
+import { Modal } from "flowbite-react";
+import styles from "./modal.module.css";
+import Image from "next/image";
+import { MediaRenderer } from "@thirdweb-dev/react";
+import dropDownIcon from "../../assets/png/dropdownIcon.png";
 
 export default function SecondNetworkModal() {
   // Custom hook to get information about the current blockchain network
@@ -20,85 +24,152 @@ export default function SecondNetworkModal() {
     undefined
   );
 
+  // State to keep track of the selected chain image URL
+  const [selectedChainImage, setSelectedChainImage] = useState<
+    string | undefined
+  >(undefined);
+
   // Handler for the selection change in the dropdown
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = (value: string, imageUrl: string) => {
     // Update the selectedChain state with the chosen value
     setSelectedChain(value);
+    // Update the selectedChainImage state with the corresponding image URL
+    setSelectedChainImage(imageUrl);
   };
 
+  // State to control the modal's visibility
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <div>
-      <Button onClick={() => setOpenModal(true)}>Toggle modal</Button>
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
-        <Modal.Header>Terms Service</Modal.Header>
-        <Modal.Body>
-          <div className="space-y-6">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
+      <div>
+        {/* Button to open the modal */}
+        <button
+          onClick={() => setOpenModal(true)}
+          className={styles.activeChain}
+        >
+          {/* Display the selected chain image */}
+          {selectedChainImage && <MediaRenderer src={selectedChainImage} />}
+          {/* Display the selected chain name */}
+          <h4>
+            {selectedChain ? String(selectedChain) : `Connect Wallet`}
+          </h4>{" "}
+          {/* Dropdown icon */}
+          <Image
+            className={styles.dropDownIcon}
+            src={dropDownIcon}
+            width={20}
+            height={20}
+            alt="Dropdown Image"
+          />
+        </button>
+
+        {/* Modal component */}
+        <Modal
+          className={styles.Modal}
+          show={openModal}
+          onClose={() => setOpenModal(false)}
+        >
+          {/* Modal header */}
+          <Modal.Header className={styles.ModalHeader}>
+            <h2>Select a Chain</h2>
+            <p>
+              Select a chain from our default list or search for a token by
+              symbol or address.
             </p>
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              The European Union’s General Data Protection Regulation (G.D.P.R.)
-              goes into effect on May 25 and is meant to ensure a common set of
-              data rights in the European Union. It requires organizations to
-              notify users as soon as possible of high-risk data breaches that
-              could personally affect them.
-            </p>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => setOpenModal(false)}>I accept</Button>
-          <Button color="gray" onClick={() => setOpenModal(false)}>
-            Decline
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      {/* Dropdown component for selecting different blockchain networks */}
-      <Dropdown
-        label={selectedChain ? String(selectedChain) : `Connect Wallet`}
-        dismissOnClick={false}
-      >
-        {/* Individual items in the dropdown for each blockchain network */}
-        <Dropdown.Item
-          value="Sepolia"
-          onClick={() => handleSelectChange(Sepolia.name)}
-        >
-          Sepolia
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="Mumbai"
-          onClick={() => handleSelectChange(Mumbai.name)}
-        >
-          Mumbai
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="AvalancheFuji"
-          onClick={() => handleSelectChange(AvalancheFuji.name)}
-        >
-          AvalancheFuji
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="BaseGoerli"
-          onClick={() => handleSelectChange(BaseGoerli.name)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="OptimismGoerli"
-          onClick={() => handleSelectChange(OptimismGoerli.name)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="BinanceTestnet"
-          onClick={() => handleSelectChange(BinanceTestnet.name)}
-        >
-          BinanceTestnet
-        </Dropdown.Item>
-      </Dropdown>
+          </Modal.Header>
+
+          {/* Modal body */}
+          <Modal.Body className={styles.ModalBody}>
+            <div className="space-y-6">
+              {/* Button to display the selected chain in the modal */}
+              <button className={styles.activeChain}>
+                {/* Display the selected chain image in the modal */}
+                {selectedChainImage && (
+                  <MediaRenderer src={selectedChainImage} />
+                )}
+                {/* Display the selected chain name in the modal */}
+                <h4>
+                  {" "}
+                  {selectedChain ? String(selectedChain) : `Connect Wallet`}
+                </h4>{" "}
+              </button>
+
+              {/* List of chain buttons to switch between chains */}
+              <div className={styles.SwitchChains}>
+                {/* Button for Sepolia chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(Sepolia.name, Sepolia.icon.url)
+                  }
+                >
+                  <MediaRenderer src={Sepolia.icon.url} />
+                  Sepolia
+                </button>
+
+                {/* Button for Mumbai chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(Mumbai.name, Mumbai.icon.url)
+                  }
+                >
+                  <MediaRenderer src={Mumbai.icon.url} />
+                  Mumbai
+                </button>
+
+                {/* Button for AvalancheFuji chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(
+                      AvalancheFuji.name,
+                      AvalancheFuji.icon.url
+                    )
+                  }
+                >
+                  <MediaRenderer src={AvalancheFuji.icon.url} />
+                  AvalancheFuji
+                </button>
+
+                {/* Button for BaseGoerli chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(BaseGoerli.name, BaseGoerli.icon.url)
+                  }
+                >
+                  <MediaRenderer src={BaseGoerli.icon.url} />
+                  BaseGoerli
+                </button>
+
+                {/* Button for OptimismGoerli chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(
+                      OptimismGoerli.name,
+                      OptimismGoerli.icon.url
+                    )
+                  }
+                >
+                  <MediaRenderer src={OptimismGoerli.icon.url} />
+                  OptimismGoerli
+                </button>
+
+                {/* Button for BinanceTestnet chain */}
+                <button
+                  onClick={() =>
+                    handleSelectChange(
+                      BinanceTestnet.name,
+                      BinanceTestnet.icon.url
+                    )
+                  }
+                >
+                  <MediaRenderer src={BinanceTestnet.icon.url} />
+                  BinanceTestnet
+                </button>
+              </div>
+            </div>
+          </Modal.Body>
+        </Modal>
+      </div>
     </div>
   );
 }

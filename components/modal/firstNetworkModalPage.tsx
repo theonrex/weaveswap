@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useSwitchChain, useChain } from "@thirdweb-dev/react";
-import { Dropdown } from "flowbite-react";
 import {
   Sepolia,
   OptimismGoerli,
@@ -9,11 +8,11 @@ import {
   AvalancheFuji,
   Mumbai,
 } from "@thirdweb-dev/chains";
-import { Button, Modal } from "flowbite-react";
+import { Modal } from "flowbite-react";
 import styles from "./modal.module.css";
 import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
-
+import dropDownIcon from "../../assets/png/dropdownIcon.png";
 export default function FirstNetworkModal() {
   const switchChain = useSwitchChain();
   const chain = useChain();
@@ -21,11 +20,21 @@ export default function FirstNetworkModal() {
   const [selectedChain, setSelectedChain] = useState();
   const [openModal, setOpenModal] = useState(false);
 
-  console.log(Sepolia);
+  console.log(chain);
 
   return (
     <div>
-      <Button onClick={() => setOpenModal(true)}>Toggle modal</Button>
+      <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
+        <MediaRenderer src={chain?.icon?.url} />
+        <h4>{chain?.name ? chain?.name : `Connect Wallet`}</h4>{" "}
+        <Image
+          className={styles.dropDownIcon}
+          src={dropDownIcon}
+          width={20}
+          height={20}
+          alt="Drowdown Image"
+        />
+      </button>
       <Modal
         className={styles.Modal}
         show={openModal}
@@ -41,36 +50,33 @@ export default function FirstNetworkModal() {
         <Modal.Body className={styles.ModalBody}>
           <div className="space-y-6">
             <button className={styles.activeChain}>
+              <MediaRenderer src={chain?.icon?.url} />
               {chain?.name ? chain?.name : `Connect Wallet`}
             </button>
 
             <div className={styles.SwitchChains}>
               <button onClick={() => switchChain(Sepolia.chainId)}>
+                <MediaRenderer src={Sepolia.icon.url} />
                 Sepolia
-                <MediaRenderer src="ipfs://QmV4HC9fNrPJQeYpbW55NLLuSBMyzE11zS1L4HmL6Lbk7X" />
-                <Image
-                  src={Sepolia.icon}
-                  alt="{Sepolia.icon}"
-                  width={512}
-                  height={512}
-                />
               </button>{" "}
               <button onClick={() => switchChain(Mumbai.chainId)}>
+                <MediaRenderer src={Mumbai.icon.url} />
                 Mumbai
               </button>{" "}
               <button onClick={() => switchChain(AvalancheFuji.chainId)}>
+                <MediaRenderer src={AvalancheFuji.icon.url} />
                 AvalancheFuji
               </button>{" "}
               <button onClick={() => switchChain(BaseGoerli.chainId)}>
+                <MediaRenderer src={BaseGoerli.icon.url} />
                 BaseGoerli
               </button>{" "}
               <button onClick={() => switchChain(OptimismGoerli.chainId)}>
-                Sepolia
-              </button>{" "}
-              <button onClick={() => switchChain(Sepolia.chainId)}>
+                <MediaRenderer src={OptimismGoerli.icon.url} />
                 OptimismGoerli
               </button>{" "}
               <button onClick={() => switchChain(BinanceTestnet.chainId)}>
+                <MediaRenderer src={BinanceTestnet.icon.url} />
                 BinanceTestnet
               </button>{" "}
             </div>
