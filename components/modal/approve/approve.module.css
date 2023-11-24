@@ -5,11 +5,13 @@
 
 .activeChain {
   display: flex;
-  flex-direction: row;
   align-items: center;
   background-color: blueviolet;
   padding: 1em 2em;
+  width: 100%;
   border-radius: 0.8em;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .activeChain img {

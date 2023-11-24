@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { useSwitchChain, useChain } from "@thirdweb-dev/react";
+import {
+  useSwitchChain,
+  useChain,
+  useConnectionStatus,
+} from "@thirdweb-dev/react";
 import {
   Sepolia,
   OptimismGoerli,
@@ -20,13 +24,25 @@ export default function FirstNetworkModal() {
   const [selectedChain, setSelectedChain] = useState();
   const [openModal, setOpenModal] = useState(false);
 
-  console.log(chain);
+  const status = useConnectionStatus();
 
+  const renderConnectionStatus = () => {
+    switch (status) {
+      case "unknown":
+        return <div>Loading...</div>;
+      case "disconnected":
+        return <div>Disconnected</div>;
+      case "connecting":
+        return <div>Connecting...</div>;
+      default:
+        return chain ? <h4> {chain.name}</h4> : <h4>Unsupported network</h4>;
+    }
+  };
   return (
     <div>
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
         <MediaRenderer src={chain?.icon?.url} />
-        <h4>{chain?.name ? chain?.name : `Connect Wallet`}</h4>{" "}
+        {renderConnectionStatus()}
         <Image
           className={styles.dropDownIcon}
           src={dropDownIcon}
@@ -51,7 +67,7 @@ export default function FirstNetworkModal() {
           <div className="space-y-6">
             <button className={styles.activeChain}>
               <MediaRenderer src={chain?.icon?.url} />
-              {chain?.name ? chain?.name : `Connect Wallet`}
+              {renderConnectionStatus()}
             </button>
 
             <div className={styles.SwitchChains}>

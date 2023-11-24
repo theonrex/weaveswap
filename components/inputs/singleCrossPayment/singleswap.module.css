@@ -1,12 +1,12 @@
 .crossInputBody {
   display: flex;
-  background-color: rgb(37, 37, 37);
+  background-color: rgb(28, 27, 27);
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
   padding: 2em 1em;
   margin: 1em auto;
-  border-radius: 0.5em;
+  border-radius: 1em;
 }
 
 .swapInputBody {
@@ -28,7 +28,7 @@
   outline: none !important;
   box-shadow: none !important;
   outline-color: transparent !important;
-  font-size: 3em;
+  font-size: 2em;
 }
 
 .swapInputBody .swapInput:hover,
@@ -50,4 +50,10 @@
   border-radius: 0.8em;
   width: 30%;
   margin: 1em;
+}
+
+@media screen and (max-width: 600px) {
+  .swapInputBody {
+    width: 30%;
+  }
 }

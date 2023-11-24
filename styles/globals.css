@@ -6,6 +6,7 @@
   --foreground-rgb: red;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --button_color: #450047;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,6 +19,11 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #000000 !important;
-  font-family: "Kanit", sans-serif;
+  background: #090206 !important;
+  font-family: "Kanit", sans-serif !important;
+}
+
+h2,
+h3 {
+  font-family: "Kanit", sans-serif !important;
 }

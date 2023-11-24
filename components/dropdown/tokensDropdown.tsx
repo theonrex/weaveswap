@@ -9,6 +9,7 @@ import {
   AvalancheFuji,
   Mumbai,
 } from "@thirdweb-dev/chains";
+import styles from "./dropdown.module.css";
 
 export default function TokensDropdown() {
   // Custom hook to get information about the current blockchain network
@@ -25,49 +26,40 @@ export default function TokensDropdown() {
     setSelectedChain(value);
   };
 
+  console.log(AvalancheFuji);
+
   return (
-    <div>
+    <div className={styles.TokensDropdown}>
       {/* Dropdown component for selecting different blockchain networks */}
       <Dropdown
         label={selectedChain ? String(selectedChain) : `Connect Wallet`}
         dismissOnClick={false}
+        className={styles.TokensDropdown_Button}
       >
         {/* Individual items in the dropdown for each blockchain network */}
         <Dropdown.Item
           value="Sepolia"
-          onClick={() => handleSelectChange(Sepolia.name)}
+          onClick={() => handleSelectChange(Sepolia.chain)}
         >
           Link
         </Dropdown.Item>
         <Dropdown.Item
           value="Mumbai"
-          onClick={() => handleSelectChange(Mumbai.name)}
+          onClick={() => handleSelectChange(Mumbai.chain)}
         >
           Mumbai
         </Dropdown.Item>
         <Dropdown.Item
           value="AvalancheFuji"
-          onClick={() => handleSelectChange(AvalancheFuji.name)}
+          onClick={() => handleSelectChange(AvalancheFuji.chain)}
         >
-          AvalancheFuji
+          <h4> AvalancheFuji</h4>{" "}
         </Dropdown.Item>
         <Dropdown.Item
           value="BaseGoerli"
-          onClick={() => handleSelectChange(BaseGoerli.name)}
+          onClick={() => handleSelectChange(BaseGoerli.chain)}
         >
           OptimismGoerli
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="OptimismGoerli"
-          onClick={() => handleSelectChange(OptimismGoerli.name)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="BinanceTestnet"
-          onClick={() => handleSelectChange(BinanceTestnet.name)}
-        >
-          BinanceTestnet
         </Dropdown.Item>
       </Dropdown>
     </div>

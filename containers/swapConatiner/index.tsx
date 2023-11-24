@@ -26,7 +26,7 @@ export default function SwapContainer() {
 
       <div className={styles.crossChainSection}>
         <section className={`${styles.crossChain_Header}`}>
-          <h4>Cross Chain Swap</h4>
+          <h4>{/* Cross Chain Swap */}</h4>
           <button>
             <h4>Multi cross</h4>
           </button>

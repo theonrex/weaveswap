@@ -26,11 +26,10 @@ export default function SingleCrossSwapInput() {
     number | undefined
   >(undefined);
   // State to manage the input value
-  const [amount, setAmount] = useState<number>(0.0);
+  const [amount, setAmount] = useState<number>();
   const [_value, setValue] = useState(0.0);
   const address = useAddress();
 
-  console.log(amount);
   const _owner = address;
   const funder = address;
 
@@ -117,12 +116,6 @@ export default function SingleCrossSwapInput() {
     console.log("allowanceData", formattedNumber);
   }, [formattedNumber, _owner, _spender, getFunderBalanceNumber]);
 
-  console.log("getFunderBalanceNumber", getFunderBalanceNumber);
-  console.log("allowanceData", formattedNumber);
-  console.log("amount", amount);
-  // getFunderBalanceNumber 0.000004
-  //  allowanceData 999999999999.999995
-  //  amount 6.666666666666667e+24
   return (
     <div>
       <div className={styles.crossInputBody}>
@@ -143,34 +136,48 @@ export default function SingleCrossSwapInput() {
       </div>
       <div className={styles.crossChainBctn}>{}</div>
       <div className={styles.crossChainBtnc}>
-        {getFunderBalanceNumber &&
-        getFunderBalanceNumber >= amount &&
-        formattedNumber &&
-        formattedNumber >= amount ? (
+        {amount === null || amount === undefined || "" ? (
           <div>
-            {/* Display the "Continue" button */}
-            <button className={styles.crossChainBtn} onClick={callSendMessage}>
-              Swap
-            </button>{" "}
+            <div className={styles.errorMessage}>Fill in an amount</div>
           </div>
         ) : (
           <div>
-            {getFunderBalanceNumber && getFunderBalanceNumber >= amount ? (
-              // Display the "Fund" button
-              <button
-                className={styles.crossChainBtn}
-                onClick={callSendMessage}
-              >
-                swap
-              </button>
-            ) : formattedNumber && formattedNumber >= amount ? (
-              // Display the "Allowance" button
-              <button className={styles.crossChainBtn} onClick={fundContract}>
-                Fund
-              </button>
+            {getFunderBalanceNumber &&
+            getFunderBalanceNumber >= amount &&
+            formattedNumber &&
+            formattedNumber >= amount ? (
+              <div>
+                {/* Display the "Continue" button */}
+                <button
+                  className={styles.crossChainBtn}
+                  onClick={callSendMessage}
+                >
+                  Swap
+                </button>{" "}
+              </div>
             ) : (
-              // Display the message to fund with the given input
-              <ApproveModalPage />
+              <div>
+                {getFunderBalanceNumber && getFunderBalanceNumber >= amount ? (
+                  // Display the "Fund" button
+                  <button
+                    className={styles.crossChainBtn}
+                    onClick={callSendMessage}
+                  >
+                    swap
+                  </button>
+                ) : formattedNumber && formattedNumber >= amount ? (
+                  // Display the "Allowance" button
+                  <button
+                    className={styles.crossChainBtn}
+                    onClick={fundContract}
+                  >
+                    Fund
+                  </button>
+                ) : (
+                  // Display the message to fund with the given input
+                  <ApproveModalPage />
+                )}
+              </div>
             )}
           </div>
         )}
