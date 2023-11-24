@@ -14,6 +14,19 @@ import {
 } from "@thirdweb-dev/react";
 import ChainContext from "@/Context/Chain";
 import { Mumbai } from "@thirdweb-dev/chains";
+import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
+import { publicProvider } from "wagmi/providers/public";
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [mainnet],
+  [publicProvider()]
+);
+
+const config = createConfig({
+  autoConnect: true,
+  publicClient,
+  webSocketPublicClient,
+});
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -48,7 +61,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         trustWallet({ recommended: true }),
       ]}
     >
-      <Component {...pageProps} />
+      <WagmiConfig config={config}>
+        <Component {...pageProps} />
+      </WagmiConfig>
     </ThirdwebProvider>
   );
 }

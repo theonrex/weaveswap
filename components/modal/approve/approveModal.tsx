@@ -25,7 +25,7 @@ export default function ApproveModalPage() {
   const [openModal, setOpenModal] = useState(false);
 
   // State to manage the input value
-  const [_value, setValue] = useState(0.0);
+  const [_value, setValue] = useState<number>(0.0);
 
   const _spender = Polygon_Mumbai_SourceChainSender;
 

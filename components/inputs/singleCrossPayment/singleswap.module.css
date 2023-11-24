@@ -40,3 +40,14 @@
   box-shadow: none !important;
   outline-color: transparent !important;
 }
+
+.crossChainBtn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: blueviolet;
+  padding: 1em 2em;
+  border-radius: 0.8em;
+  width: 30%;
+  margin: 1em;
+}

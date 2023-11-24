@@ -18,7 +18,7 @@ export default function SwapContainer() {
 
   return (
     <div className={styles.SwapContainer}>
-      <h1 className={styles.TradeTag}>Trade</h1>
+      <h1 className={styles.TradeTag}>Swap</h1>
 
       <p className={styles.coinDetailsTag}>
         1 SUSHI ($0.97) = 0.0004734 ETH ($2.05k)
