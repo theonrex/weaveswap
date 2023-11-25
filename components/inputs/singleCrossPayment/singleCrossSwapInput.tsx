@@ -13,8 +13,7 @@ import {
 } from "@/constants/address";
 import { useAddress } from "@thirdweb-dev/react";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
-import { ethers } from "ethers";
-//import { useContractRead } from "wagmi";
+import { Tooltip } from "flowbite-react";
 
 export default function SingleCrossSwapInput() {
   // Declare formattedNumber as a state variable
@@ -115,6 +114,9 @@ export default function SingleCrossSwapInput() {
 
     console.log("allowanceData", formattedNumber);
   }, [formattedNumber, _owner, _spender, getFunderBalanceNumber]);
+  // console.log("allowanceData", formattedNumber);
+  // console.log("getFunderBalanceNumber", getFunderBalanceNumber);
+  // console.log("amount", amount);
 
   return (
     <div>
@@ -136,7 +138,7 @@ export default function SingleCrossSwapInput() {
       </div>
       <div className={styles.crossChainBctn}>{}</div>
       <div className={styles.crossChainBtnc}>
-        {amount === null || amount === undefined || "" ? (
+        {Number.isNaN(amount) || amount === undefined || "" || null ? (
           <div>
             <div className={styles.errorMessage}>Fill in an amount</div>
           </div>
@@ -167,14 +169,26 @@ export default function SingleCrossSwapInput() {
                   </button>
                 ) : formattedNumber && formattedNumber >= amount ? (
                   // Display the "Allowance" button
-                  <button
-                    className={styles.crossChainBtn}
-                    onClick={fundContract}
-                  >
-                    Fund
-                  </button>
+                  <div>
+                    <button
+                      className={styles.crossChainBtn}
+                      onClick={fundContract}
+                    >
+                      Fund
+                    </button>
+                    <div className={styles.Tooltip_body}>
+                      <Tooltip
+                        className={styles.Tooltip}
+                        content="
+                        When users use Uniswap, Rhino, Sushiswap, or Aave, the platform will require users to first transfer tokens from their wallets to a contract, and then hand over another token of equal value to the user.                        
+                        "
+                        arrow={false}
+                      >
+                        <div className={styles.whyApprove}> Why Fund?</div>
+                      </Tooltip>
+                    </div>
+                  </div>
                 ) : (
-                  // Display the message to fund with the given input
                   <ApproveModalPage />
                 )}
               </div>

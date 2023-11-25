@@ -1,9 +1,4 @@
-import React, { useState } from "react";
-import {
-  useSwitchChain,
-  useChain,
-  useConnectionStatus,
-} from "@thirdweb-dev/react";
+import React, { useState, useEffect } from "react";
 import {
   Sepolia,
   OptimismGoerli,
@@ -17,15 +12,51 @@ import styles from "./modal.module.css";
 import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
-export default function FirstNetworkModal() {
+import { useAppDispatch } from "@/redux/hooks";
+import { setActiveChain } from "@/redux/features/todo-slice";
+import {
+  useSwitchChain,
+  useChain,
+  useConnectionStatus,
+} from "@thirdweb-dev/react";
+
+// Array to store chain options
+const ChainOptions = [
+  { id: Sepolia.chainId, name: "Sepolia", icon: Sepolia.icon },
+  { id: Mumbai.chainId, name: "Mumbai", icon: Mumbai.icon },
+  {
+    id: AvalancheFuji.chainId,
+    name: "AvalancheFuji",
+    icon: AvalancheFuji.icon,
+  },
+  { id: BaseGoerli.chainId, name: "BaseGoerli", icon: BaseGoerli.icon },
+  {
+    id: OptimismGoerli.chainId,
+    name: "OptimismGoerli",
+    icon: OptimismGoerli.icon,
+  },
+  {
+    id: BinanceTestnet.chainId,
+    name: "BinanceTestnet",
+    icon: BinanceTestnet.icon,
+  },
+];
+
+const FirstNetworkModal: React.FC = () => {
   const switchChain = useSwitchChain();
   const chain = useChain();
-
-  const [selectedChain, setSelectedChain] = useState();
   const [openModal, setOpenModal] = useState(false);
-
   const status = useConnectionStatus();
+  const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    // Set the active chain in the Redux store when the chain changes
+    if (chain) {
+      dispatch(setActiveChain(chain));
+    }
+  }, [chain, dispatch]);
+
+  // Function to render the connection status based on the network status
   const renderConnectionStatus = () => {
     switch (status) {
       case "unknown":
@@ -35,11 +66,13 @@ export default function FirstNetworkModal() {
       case "connecting":
         return <div>Connecting...</div>;
       default:
-        return chain ? <h4> {chain.name}</h4> : <h4>Unsupported network</h4>;
+        return chain ? <h4>{chain.name}</h4> : <h4>Unsupported network</h4>;
     }
   };
+
   return (
     <div>
+      {/* Button to open the modal */}
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
         <MediaRenderer src={chain?.icon?.url} />
         {renderConnectionStatus()}
@@ -48,9 +81,10 @@ export default function FirstNetworkModal() {
           src={dropDownIcon}
           width={20}
           height={20}
-          alt="Drowdown Image"
+          alt="Dropdown Image"
         />
       </button>
+      {/* Modal for selecting a chain */}
       <Modal
         className={styles.Modal}
         show={openModal}
@@ -65,40 +99,25 @@ export default function FirstNetworkModal() {
         </Modal.Header>
         <Modal.Body className={styles.ModalBody}>
           <div className="space-y-6">
+            {/* Display the active chain in the modal */}
             <button className={styles.activeChain}>
               <MediaRenderer src={chain?.icon?.url} />
               {renderConnectionStatus()}
             </button>
-
+            {/* Display available chain options */}
             <div className={styles.SwitchChains}>
-              <button onClick={() => switchChain(Sepolia.chainId)}>
-                <MediaRenderer src={Sepolia.icon.url} />
-                Sepolia
-              </button>{" "}
-              <button onClick={() => switchChain(Mumbai.chainId)}>
-                <MediaRenderer src={Mumbai.icon.url} />
-                Mumbai
-              </button>{" "}
-              <button onClick={() => switchChain(AvalancheFuji.chainId)}>
-                <MediaRenderer src={AvalancheFuji.icon.url} />
-                AvalancheFuji
-              </button>{" "}
-              <button onClick={() => switchChain(BaseGoerli.chainId)}>
-                <MediaRenderer src={BaseGoerli.icon.url} />
-                BaseGoerli
-              </button>{" "}
-              <button onClick={() => switchChain(OptimismGoerli.chainId)}>
-                <MediaRenderer src={OptimismGoerli.icon.url} />
-                OptimismGoerli
-              </button>{" "}
-              <button onClick={() => switchChain(BinanceTestnet.chainId)}>
-                <MediaRenderer src={BinanceTestnet.icon.url} />
-                BinanceTestnet
-              </button>{" "}
+              {ChainOptions.map((option) => (
+                <button key={option.id} onClick={() => switchChain(option.id)}>
+                  <MediaRenderer src={option.icon.url} />
+                  {option.name}
+                </button>
+              ))}
             </div>
           </div>
         </Modal.Body>
       </Modal>
     </div>
   );
-}
+};
+
+export default FirstNetworkModal;

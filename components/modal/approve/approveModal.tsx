@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import { useSwitchChain, useChain } from "@thirdweb-dev/react";
-import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
-import { Modal } from "flowbite-react";
+import { useChain } from "@thirdweb-dev/react";
 import styles from "./approve.module.css";
 import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
@@ -18,6 +9,7 @@ import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
 } from "@/constants/address";
+import { Tooltip, Modal } from "flowbite-react";
 
 export default function ApproveModalPage() {
   const chain = useChain();
@@ -47,6 +39,15 @@ export default function ApproveModalPage() {
         <MediaRenderer src={chain?.icon?.url} />
         <h4>Approve</h4>{" "}
       </button>
+      <div className={styles.Tooltip_body}>
+        <Tooltip
+          className={styles.Tooltip}
+          content="As per the ERC-20 protocol, a standard developed by the official Ethereum team, users engaging in swap or cross-chain bridge services (e.g., Uniswap, Rhino, Sushiswap) will encounter an approval window when trading ERC-20 tokens. This authorization step ensures adherence to protocol standards and facilitates secure and standardized token transactions. "
+          arrow={false}
+        >
+          <div className={styles.whyApprove}> Why Approve?</div>
+        </Tooltip>
+      </div>
       <Modal
         className={styles.Modal}
         show={openModal}

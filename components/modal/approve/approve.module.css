@@ -48,3 +48,29 @@
 .swapInputBody input {
   background-color: black;
 }
+
+.Tooltip {
+  background-color: rgb(21, 15, 15);
+  width: 90%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.Tooltip_body {
+  width: 100%;
+  position: relative;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  margin-top: 1em;
+}
+
+.whyApprove {
+  text-align: center;
+  width: 100%;
+}
