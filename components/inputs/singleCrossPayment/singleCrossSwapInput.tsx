@@ -14,6 +14,9 @@ import {
 import { useAddress } from "@thirdweb-dev/react";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
 import { Tooltip } from "flowbite-react";
+import { useSelector } from "react-redux";
+import { selectActiveChain } from "@/redux/features/activeChain";
+import { selectSecondChain } from "@/redux/features/selectedChain";
 
 export default function SingleCrossSwapInput() {
   // Declare formattedNumber as a state variable
@@ -27,6 +30,9 @@ export default function SingleCrossSwapInput() {
   // State to manage the input value
   const [amount, setAmount] = useState<number>();
   const [_value, setValue] = useState(0.0);
+  const [destinationState, setDestinationState] = useState("");
+  const [chainReceiver, setChainReceiver] = useState("");
+
   const address = useAddress();
 
   const _owner = address;
@@ -50,8 +56,29 @@ export default function SingleCrossSwapInput() {
   };
 
   //sendMessage
-  const destinationChainSelector = "16015286601757825753";
-  const receiver = Eth_Sepolia_DestChainReceiver;
+  const activeChain = useSelector(selectActiveChain);
+  const secondChain = useSelector(selectSecondChain);
+
+  console.log("secondChain", secondChain);
+  console.log("activeChain", activeChain);
+
+  //check receiver
+  useEffect(() => {
+    if (activeChain?.chain === "mumbai" && secondChain === "sepolia") {
+      const destinationChainSelector = "16015286601757825753";
+      const receiver = Eth_Sepolia_DestChainReceiver;
+      setDestinationState(destinationChainSelector);
+      setChainReceiver(receiver);
+    } else if (activeChain?.chain === "AVAX" && secondChain === "sepolia") {
+      const destinationChainSelector = "16015286601757825753";
+      const receiver = "0x04B8C373e97a906e23d11123f047b2E2342cd9F1";
+      setDestinationState(destinationChainSelector);
+      setChainReceiver(receiver);
+    } else {
+      console.log("wrong network");
+    }
+  });
+
   const feeToken = 1;
   const to = address;
 

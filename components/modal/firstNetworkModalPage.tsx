@@ -13,7 +13,7 @@ import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useAppDispatch } from "@/redux/hooks";
-import { setActiveChain } from "@/redux/features/todo-slice";
+import { setActiveChain } from "@/redux/features/activeChain";
 import {
   useSwitchChain,
   useChain,

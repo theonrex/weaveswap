@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSwitchChain, useChain } from "@thirdweb-dev/react";
 import { Dropdown } from "flowbite-react";
 import {
@@ -14,15 +14,19 @@ import styles from "./modal.module.css";
 import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
+import { useAppDispatch } from "@/redux/hooks";
+import setSecondChain from "@/redux/features/selectedChain";
 
 export default function SecondNetworkModal() {
+  const dispatch = useAppDispatch();
+
   // Custom hook to get information about the current blockchain network
   const chain = useChain();
 
   // State to keep track of the selected chain
-  const [selectedChain, setSelectedChain] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedChainState, setSelectedChainState] = useState<
+    string | undefined
+  >(undefined);
 
   // State to keep track of the selected chain image URL
   const [selectedChainImage, setSelectedChainImage] = useState<
@@ -32,13 +36,22 @@ export default function SecondNetworkModal() {
   // Handler for the selection change in the dropdown
   const handleSelectChange = (value: string, imageUrl: string) => {
     // Update the selectedChain state with the chosen value
-    setSelectedChain(value);
+    setSelectedChainState(value);
     // Update the selectedChainImage state with the corresponding image URL
     setSelectedChainImage(imageUrl);
   };
 
   // State to control the modal's visibility
   const [openModal, setOpenModal] = useState(false);
+
+  useEffect(() => {
+    // Set the active chain in the Redux store when the chain changes
+    if (selectedChainState?.type) {
+      dispatch(setSecondChain(selectedChainState));
+    }
+  }, [selectedChainState, dispatch]);
+
+  console.log("selectedChainState", selectedChainState);
 
   return (
     <div>
@@ -52,7 +65,7 @@ export default function SecondNetworkModal() {
           {selectedChainImage && <MediaRenderer src={selectedChainImage} />}
           {/* Display the selected chain name */}
           <h4>
-            {selectedChain ? String(selectedChain) : `Connect Wallet`}
+            {selectedChainState ? String(selectedChainState) : ` Wallet`}
           </h4>{" "}
           {/* Dropdown icon */}
           <Image
@@ -91,7 +104,9 @@ export default function SecondNetworkModal() {
                 {/* Display the selected chain name in the modal */}
                 <h4>
                   {" "}
-                  {selectedChain ? String(selectedChain) : `Connect Wallet`}
+                  {selectedChainState
+                    ? String(selectedChainState)
+                    : `Connect Wallet`}
                 </h4>{" "}
               </button>
 

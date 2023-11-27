@@ -7,3 +7,13 @@ export const Polygon_Mumbai_SourceChainSender =
 
 export const Mumbai_Approve_contract =
   "0x326c977e6efc84e512bb9c30f76e30c160ed06fb";
+
+export const Eth_Sepolia_Fuji_LiquidityPool =
+  "0x459FeECB0c0Cf74Be0e9e0E3978B2816821de800";
+export const Eth_Sepolia_Fuji_DestChainReceiver =
+  "0x04B8C373e97a906e23d11123f047b2E2342cd9F1";
+export const Polygon_MumbaiFuji_SourceChainSender =
+  "0xaD23Fe2001c348686c6Bc25a698F99DAF57aD7aE";
+
+export const Fuji_Approve_contract =
+  "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
