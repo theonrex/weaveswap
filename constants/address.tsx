@@ -1,3 +1,4 @@
+//mumbai to sepolia
 export const Eth_Sepolia_LiquidityPool =
   "0xD92af77A360c53ccB30C944702eb2b8554EF1120";
 export const Eth_Sepolia_DestChainReceiver =
@@ -8,12 +9,13 @@ export const Polygon_Mumbai_SourceChainSender =
 export const Mumbai_Approve_contract =
   "0x326c977e6efc84e512bb9c30f76e30c160ed06fb";
 
-export const Eth_Sepolia_Fuji_LiquidityPool =
-  "0x459FeECB0c0Cf74Be0e9e0E3978B2816821de800";
-export const Eth_Sepolia_Fuji_DestChainReceiver =
-  "0x04B8C373e97a906e23d11123f047b2E2342cd9F1";
-export const Polygon_MumbaiFuji_SourceChainSender =
-  "0xaD23Fe2001c348686c6Bc25a698F99DAF57aD7aE";
+//sepolia to mumbai
 
-export const Fuji_Approve_contract =
-  "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846";
+export const Sepolia_to_mumbai_LiquidityPool =
+  "0x17Bd7d8629aad740102ADE863ddcC47E11839805";
+export const Sepolia_to_mumbai_DestChainReceiver =
+  "0x631DbCe96237E5a5d12bF3F93E708926272d2bc8";
+export const Sepolia_to_mumbai_SourceChainSender =
+  "0x88074CF679345CdCd177aBFbBE1dB99acf6B2e2b";
+
+export const Sepolia_contract = "0x779877A7B0D9E8603169DdbD7836e478b4624789";

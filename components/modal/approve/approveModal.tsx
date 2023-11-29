@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useChain } from "@thirdweb-dev/react";
 import styles from "./approve.module.css";
 import Image from "next/image";
@@ -8,8 +8,13 @@ import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
+  Sepolia_to_mumbai_SourceChainSender,
+  Sepolia_contract,
 } from "@/constants/address";
 import { Tooltip, Modal } from "flowbite-react";
+import { useSelector } from "react-redux";
+import { selectActiveChain } from "@/redux/features/activeChain";
+import { selectSecondChain } from "@/redux/features/selectedChain";
 
 export default function ApproveModalPage() {
   const chain = useChain();
@@ -18,15 +23,38 @@ export default function ApproveModalPage() {
 
   // State to manage the input value
   const [_value, setValue] = useState<number>(0.0);
+  //sendMessage
+  const activeChain = useSelector(selectActiveChain);
+  const secondChain = useSelector(selectSecondChain);
+  const [spender, setSpender] = useState("");
+  const [approve_contract, setApprove_contract] = useState("");
 
-  const _spender = Polygon_Mumbai_SourceChainSender;
+  //check receiver
+  useEffect(() => {
+    if (activeChain?.chain === "mumbai" && secondChain === "sepolia") {
+      const approve = Mumbai_Approve_contract;
+      const _spender = Polygon_Mumbai_SourceChainSender;
+      setSpender(_spender);
+      setApprove_contract(approve);
+    } else if (activeChain?.chain === "sepolia" && secondChain === "mumbai") {
+      const approve = Sepolia_contract;
+      const _spender = Sepolia_to_mumbai_SourceChainSender;
+      setSpender(_spender);
+      setApprove_contract(approve);
+    } else {
+      console.log("wrong network");
+    }
+  }, [spender, approve_contract]);
 
-  const { contract } = useContract(Mumbai_Approve_contract);
+  console.log("spender", spender);
+  console.log("approve_contract", approve_contract);
+
+  const { contract } = useContract(approve_contract);
   const { mutateAsync: approve } = useContractWrite(contract, "approve");
 
   const call = async () => {
     try {
-      const data = await approve({ args: [_spender, _value] });
+      const data = await approve({ args: [spender, _value] });
       console.info("contract call successs", data);
     } catch (err) {
       console.error("contract call failure", err);

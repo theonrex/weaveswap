@@ -10,6 +10,8 @@ import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
   Eth_Sepolia_DestChainReceiver,
+  Sepolia_contract,
+  Sepolia_to_mumbai_DestChainReceiver,
 } from "@/constants/address";
 import { useAddress } from "@thirdweb-dev/react";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
@@ -32,6 +34,7 @@ export default function SingleCrossSwapInput() {
   const [_value, setValue] = useState(0.0);
   const [destinationState, setDestinationState] = useState("");
   const [chainReceiver, setChainReceiver] = useState("");
+  const [allowanceCheckContract, setAllowanceCheckContract] = useState("");
 
   const address = useAddress();
 
@@ -67,24 +70,26 @@ export default function SingleCrossSwapInput() {
     if (activeChain?.chain === "mumbai" && secondChain === "sepolia") {
       const destinationChainSelector = "16015286601757825753";
       const receiver = Eth_Sepolia_DestChainReceiver;
+      const checkAllowance = Mumbai_Approve_contract;
       setDestinationState(destinationChainSelector);
       setChainReceiver(receiver);
-    } else if (activeChain?.chain === "AVAX" && secondChain === "sepolia") {
-      const destinationChainSelector = "16015286601757825753";
-      const receiver = "0x04B8C373e97a906e23d11123f047b2E2342cd9F1";
+      setAllowanceCheckContract(checkAllowance);
+    } else if (activeChain?.chain === "sepolia" && secondChain === "mumbai") {
+      const destinationChainSelector = "12532609583862916517";
+      const receiver = Sepolia_to_mumbai_DestChainReceiver;
+      const checkAllowance = Sepolia_contract;
+
       setDestinationState(destinationChainSelector);
       setChainReceiver(receiver);
+      setAllowanceCheckContract(checkAllowance);
     } else {
       console.log("wrong network");
     }
-  });
+  }, [destinationState, chainReceiver, allowanceCheckContract]);
 
   const feeToken = 1;
   const to = address;
 
-  const { contract: sendMessageContract } = useContract(
-    "0xc31E4DB93B3C7c8d0F186cDeefB59703A946ce05"
-  );
   const { mutateAsync: sendMessage, isLoading } = useContractWrite(
     contract,
     "sendMessage"
@@ -92,7 +97,7 @@ export default function SingleCrossSwapInput() {
   const callSendMessage = async () => {
     try {
       const data = await sendMessage({
-        args: [destinationChainSelector, receiver, feeToken, to, amount],
+        args: [destinationState, chainReceiver, feeToken, to, amount],
       });
       console.info("contract call successs", data);
     } catch (err) {
@@ -100,9 +105,7 @@ export default function SingleCrossSwapInput() {
     }
   };
   //function to check if the user has given the contract enought allowance
-  const { contract: allowanceCheck } = useContract(
-    "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
-  );
+  const { contract: allowanceCheck } = useContract(allowanceCheckContract);
   const { data: allowanceData } = useContractRead(allowanceCheck, "allowance", [
     _owner,
     _spender,
@@ -155,7 +158,7 @@ export default function SingleCrossSwapInput() {
           <input
             name="quantity"
             defaultValue={amount}
-            onChange={(e) => setAmount(parseFloat(e.target.value))}
+            onChange={(e) => setAmount(e.target.value)}
             className={styles.swapInput}
           />
         </div>
