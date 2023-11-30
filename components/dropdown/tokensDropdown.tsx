@@ -25,9 +25,6 @@ export default function TokensDropdown() {
     // Update the selectedChain state with the chosen value
     setSelectedChain(value);
   };
-
-  console.log(AvalancheFuji);
-
   return (
     <div className={styles.TokensDropdown}>
       {/* Dropdown component for selecting different blockchain networks */}

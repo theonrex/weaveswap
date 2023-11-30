@@ -18,4 +18,16 @@ export const Sepolia_to_mumbai_DestChainReceiver =
 export const Sepolia_to_mumbai_SourceChainSender =
   "0x88074CF679345CdCd177aBFbBE1dB99acf6B2e2b";
 
-export const Sepolia_contract = "0x779877A7B0D9E8603169DdbD7836e478b4624789";
+export const Sepolia_Approve_contract =
+  "0x779877A7B0D9E8603169DdbD7836e478b4624789";
+
+// Okay Optimism_to_Eth_Sepolia -> Eth_Sepolia
+
+export const Optimism_to_Eth_Sepolia_LiquidityPool =
+  "0xd3667bf7ae07ac8b224c74e56622a035916fa16a";
+export const Optimism_to_Eth_Sepolia_DestChainReceiver =
+  "0x8eba9ff42b7dca99dabe5a3f54337e89410a1417";
+export const Optimism_to_Eth_Sepolia_SourceChainSender =
+  "0x0cdf83f2f59c0d83b77636a3cdca0c75ea63285f";
+export const Optimism_Approve_contract =
+  "0xdc2CC710e42857672E7907CF474a69B63B93089f";

@@ -23,15 +23,6 @@ export const chainSlice = createSlice({
     setActiveChain: (state, action: PayloadAction<typeof Mumbai | null>) => {
       // Update the activeChain state
       state.activeChain = action.payload;
-
-      // Update local storage based on the active chain
-      if (action.payload) {
-        // If an active chain is provided, store it in local storage
-        localStorage.setItem("activeChain", action.payload);
-      } else {
-        // If no active chain is provided, remove the item from local storage
-        localStorage.removeItem("activeChain");
-      }
     },
   },
 });

@@ -6,6 +6,7 @@ import {
   BaseGoerli,
   AvalancheFuji,
   Mumbai,
+  BaseSepoliaTestnet,
 } from "@thirdweb-dev/chains";
 import { Modal } from "flowbite-react";
 import styles from "./modal.module.css";
@@ -22,8 +23,9 @@ import {
 
 // Array to store chain options
 const ChainOptions = [
-  { id: Sepolia.chainId, name: "Sepolia", icon: Sepolia.icon },
   { id: Mumbai.chainId, name: "Mumbai", icon: Mumbai.icon },
+  { id: Sepolia.chainId, name: "sepolia", icon: Sepolia.icon },
+
   {
     id: AvalancheFuji.chainId,
     name: "AvalancheFuji",
@@ -66,9 +68,12 @@ const FirstNetworkModal: React.FC = () => {
       case "connecting":
         return <div>Connecting...</div>;
       default:
-        return chain ? <h4>{chain.name}</h4> : <h4>Unsupported network</h4>;
+        return chain ? <h4>{chain?.name}</h4> : <h4>Unsupported network</h4>;
     }
   };
+
+  console.log(chain?.name);
+  console.log(Sepolia.chainId);
 
   return (
     <div>
@@ -76,6 +81,7 @@ const FirstNetworkModal: React.FC = () => {
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
         <MediaRenderer src={chain?.icon?.url} />
         {renderConnectionStatus()}
+
         <Image
           className={styles.dropDownIcon}
           src={dropDownIcon}
@@ -110,6 +116,7 @@ const FirstNetworkModal: React.FC = () => {
                 <button key={option.id} onClick={() => switchChain(option.id)}>
                   <MediaRenderer src={option.icon.url} />
                   {option.name}
+                  {option.id}
                 </button>
               ))}
             </div>

@@ -15,7 +15,7 @@ import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useAppDispatch } from "@/redux/hooks";
-import setSecondChain from "@/redux/features/selectedChain";
+import { setSecondChain } from "@/redux/features/selectedChain";
 
 export default function SecondNetworkModal() {
   const dispatch = useAppDispatch();
@@ -26,12 +26,12 @@ export default function SecondNetworkModal() {
   // State to keep track of the selected chain
   const [selectedChainState, setSelectedChainState] = useState<
     string | undefined
-  >(undefined);
+  >(localStorage.getItem("secondChain") || undefined);
 
   // State to keep track of the selected chain image URL
   const [selectedChainImage, setSelectedChainImage] = useState<
     string | undefined
-  >(undefined);
+  >(localStorage.getItem("selectedChainImage") || undefined);
 
   // Handler for the selection change in the dropdown
   const handleSelectChange = (value: string, imageUrl: string) => {
@@ -46,12 +46,15 @@ export default function SecondNetworkModal() {
 
   useEffect(() => {
     // Set the active chain in the Redux store when the chain changes
-    if (selectedChainState?.type) {
+    if (selectedChainState) {
       dispatch(setSecondChain(selectedChainState));
+
+      // Store the selected chain in local storage
+      localStorage.setItem("selectedChainImage", selectedChainImage);
     }
   }, [selectedChainState, dispatch]);
 
-  console.log("selectedChainState", selectedChainState);
+  // console.log("selectedChainState", selectedChainState);
 
   return (
     <div>

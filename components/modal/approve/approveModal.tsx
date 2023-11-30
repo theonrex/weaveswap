@@ -1,3 +1,4 @@
+// Import necessary libraries and components
 import React, { useState, useEffect } from "react";
 import { useChain } from "@thirdweb-dev/react";
 import styles from "./approve.module.css";
@@ -9,64 +10,92 @@ import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
   Sepolia_to_mumbai_SourceChainSender,
-  Sepolia_contract,
+  Sepolia_Approve_contract,
+  Optimism_to_Eth_Sepolia_SourceChainSender,
+  Optimism_Approve_contract,
 } from "@/constants/address";
 import { Tooltip, Modal } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { selectActiveChain } from "@/redux/features/activeChain";
 import { selectSecondChain } from "@/redux/features/selectedChain";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { css } from "@emotion/react";
+import { ethers } from "ethers";
+import { Spinner } from "flowbite-react";
+// Main component
 export default function ApproveModalPage() {
+  // Retrieve the active chain
   const chain = useChain();
 
+  // State variables
   const [openModal, setOpenModal] = useState(false);
-
-  // State to manage the input value
-  const [_value, setValue] = useState<number>(0.0);
-  //sendMessage
-  const activeChain = useSelector(selectActiveChain);
-  const secondChain = useSelector(selectSecondChain);
+  const [_value, setValue] = useState<string>("0.0008");
   const [spender, setSpender] = useState("");
   const [approve_contract, setApprove_contract] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  //check receiver
+  // Selectors for active and second chains
+  const activeChain = useSelector(selectActiveChain);
+  const secondChain = localStorage.getItem("secondChain");
+
+  // Effect to determine spender and approval contract based on active and second chains
   useEffect(() => {
-    if (activeChain?.chain === "mumbai" && secondChain === "sepolia") {
-      const approve = Mumbai_Approve_contract;
-      const _spender = Polygon_Mumbai_SourceChainSender;
-      setSpender(_spender);
-      setApprove_contract(approve);
-    } else if (activeChain?.chain === "sepolia" && secondChain === "mumbai") {
-      const approve = Sepolia_contract;
-      const _spender = Sepolia_to_mumbai_SourceChainSender;
-      setSpender(_spender);
-      setApprove_contract(approve);
+    console.log("Checking receiver on chains:", activeChain?.name, secondChain);
+
+    if (
+      activeChain?.name.includes("mumbai") &&
+      secondChain?.includes("sepolia")
+    ) {
+      setSpender(Polygon_Mumbai_SourceChainSender);
+      setApprove_contract(Mumbai_Approve_contract);
+    } else if (
+      activeChain?.name.includes("sepolia") &&
+      secondChain?.includes("mumbai")
+    ) {
+      setSpender(Sepolia_to_mumbai_SourceChainSender);
+      setApprove_contract(Sepolia_Approve_contract);
+    } else if (
+      activeChain?.name.includes("Optimism Goerli Testnet") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setSpender(Optimism_to_Eth_Sepolia_SourceChainSender);
+      setApprove_contract(Optimism_Approve_contract);
     } else {
       console.log("wrong network");
     }
-  }, [spender, approve_contract]);
+  }, [activeChain, secondChain]);
 
-  console.log("spender", spender);
-  console.log("approve_contract", approve_contract);
-
+  // Contract hooks
   const { contract } = useContract(approve_contract);
   const { mutateAsync: approve } = useContractWrite(contract, "approve");
 
+  // Function to handle contract call
   const call = async () => {
     try {
-      const data = await approve({ args: [spender, _value] });
-      console.info("contract call successs", data);
+      setLoading(true);
+      const valueInWei = ethers.utils.parseUnits(_value, "ether");
+      const data = await approve({ args: [spender, valueInWei] });
+      console.info("contract call success", data);
+      toast.success("Transaction successful!");
+      setOpenModal(false);
     } catch (err) {
       console.error("contract call failure", err);
+      toast.error(`Transaction failed: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Render component
   return (
     <div>
+      {/* Button to open the modal */}
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
         <MediaRenderer src={chain?.icon?.url} />
         <h4>Approve</h4>{" "}
       </button>
+      {/* Tooltip for additional information */}
       <div className={styles.Tooltip_body}>
         <Tooltip
           className={styles.Tooltip}
@@ -76,6 +105,7 @@ export default function ApproveModalPage() {
           <div className={styles.whyApprove}> Why Approve?</div>
         </Tooltip>
       </div>
+      {/* Modal for approving transaction */}
       <Modal
         className={styles.Modal}
         show={openModal}
@@ -90,6 +120,7 @@ export default function ApproveModalPage() {
         </Modal.Header>
         <Modal.Body className={styles.ModalBody}>
           <div className={styles.crossInputBody}>
+            {/* Input for the amount to be approved */}
             <div className={styles.swapInputBody}>
               <label htmlFor="success" className={styles.swapLabel}>
                 You Pay
@@ -102,12 +133,20 @@ export default function ApproveModalPage() {
                 className={styles.swapInput}
               />
             </div>
+            {/* Button to trigger contract call */}
             <div>
-              <button onClick={call}>callApprove</button>
+              <button
+                className={styles.approveBtn}
+                onClick={call}
+                disabled={loading}
+              >
+                {loading ? <Spinner /> : "Call Approve"}
+              </button>
             </div>
           </div>
         </Modal.Body>
       </Modal>
+      {/* Toast container for displaying notifications */}
     </div>
   );
 }

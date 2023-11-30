@@ -28,10 +28,10 @@ export const selectedChainSlice = createSlice({
       // Update local storage based on the active chain
       if (action.payload) {
         // If an active chain is provided, store it in local storage
-        localStorage.setItem("selectedChain", action.payload);
+        localStorage.setItem("secondChain", action.payload);
       } else {
         // If no active chain is provided, remove the item from local storage
-        localStorage.removeItem("selectedChain");
+        localStorage.removeItem("activeChain");
       }
     },
   },

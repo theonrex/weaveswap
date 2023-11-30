@@ -10,8 +10,12 @@ import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
   Eth_Sepolia_DestChainReceiver,
-  Sepolia_contract,
+  Sepolia_Approve_contract,
   Sepolia_to_mumbai_DestChainReceiver,
+  Optimism_to_Eth_Sepolia_DestChainReceiver,
+  Optimism_Approve_contract,
+  Sepolia_to_mumbai_SourceChainSender,
+  Optimism_to_Eth_Sepolia_SourceChainSender,
 } from "@/constants/address";
 import { useAddress } from "@thirdweb-dev/react";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
@@ -19,115 +23,122 @@ import { Tooltip } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { selectActiveChain } from "@/redux/features/activeChain";
 import { selectSecondChain } from "@/redux/features/selectedChain";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SingleCrossSwapInput() {
-  // Declare formattedNumber as a state variable
   const [formattedNumber, setFormattedNumber] = useState<number | undefined>(
     undefined
   );
-
   const [getFunderBalanceNumber, setGetFunderBalanceNumber] = useState<
     number | undefined
   >(undefined);
-  // State to manage the input value
   const [amount, setAmount] = useState<number>();
   const [_value, setValue] = useState(0.0);
   const [destinationState, setDestinationState] = useState("");
   const [chainReceiver, setChainReceiver] = useState("");
   const [allowanceCheckContract, setAllowanceCheckContract] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [checkSourceChain, setCheckSourceChain] = useState("");
+  const [activeChainState, setActiveChainState] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const address = useAddress();
-
   const _owner = address;
   const funder = address;
 
-  const _spender = Polygon_Mumbai_SourceChainSender;
+  const activeChain = useSelector(selectActiveChain);
+  const secondChain = localStorage.getItem("secondChain");
 
-  const { contract } = useContract(Polygon_Mumbai_SourceChainSender);
+  useEffect(() => {
+    if (
+      activeChain?.name.includes("mumbai") &&
+      secondChain?.includes("sepolia")
+    ) {
+      setDestinationState("16015286601757825753");
+      setChainReceiver(Eth_Sepolia_DestChainReceiver);
+      setCheckSourceChain(Polygon_Mumbai_SourceChainSender);
+      setAllowanceCheckContract(Mumbai_Approve_contract);
+    } else if (
+      activeChain?.name.includes("sepolia") &&
+      secondChain?.includes("mumbai")
+    ) {
+      setDestinationState("12532609583862916517");
+      setChainReceiver(Sepolia_to_mumbai_DestChainReceiver);
+      setCheckSourceChain(Sepolia_to_mumbai_SourceChainSender);
+      setAllowanceCheckContract(Sepolia_Approve_contract);
+    } else if (
+      activeChain?.name.includes("Optimism Goerli Testnet") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setDestinationState("16015286601757825753");
+      setChainReceiver(Optimism_to_Eth_Sepolia_DestChainReceiver);
+      setCheckSourceChain(Optimism_to_Eth_Sepolia_SourceChainSender);
+      setAllowanceCheckContract(Optimism_Approve_contract);
+    } else {
+      setErrorMessage("wrong network");
+    }
+  }, [activeChain, secondChain]);
+
+  const { contract } = useContract(checkSourceChain);
   const { mutateAsync: fund } = useContractWrite(contract, "fund");
+  const { mutateAsync: sendMessage, error } = useContractWrite(
+    contract,
+    "sendMessage"
+  );
 
-  // const { contract: allowanceContract } = useContract(
-  //   "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
-  // );
   const fundContract = async () => {
     try {
+      setLoading(true);
       const data = await fund({ args: [amount] });
-      console.info("contract call successs", data);
+      console.info("contract call success", data);
+      toast.success("Transaction successful");
     } catch (err) {
-      console.error("contract call failure", err);
+      console.error("contract call failure", error);
+      toast.error(`Transaction failed: ${error || "Unknown error"}`);
+    } finally {
+      setLoading(false);
     }
   };
-
-  //sendMessage
-  const activeChain = useSelector(selectActiveChain);
-  const secondChain = useSelector(selectSecondChain);
-
-  console.log("secondChain", secondChain);
-  console.log("activeChain", activeChain);
-
-  //check receiver
-  useEffect(() => {
-    if (activeChain?.chain === "mumbai" && secondChain === "sepolia") {
-      const destinationChainSelector = "16015286601757825753";
-      const receiver = Eth_Sepolia_DestChainReceiver;
-      const checkAllowance = Mumbai_Approve_contract;
-      setDestinationState(destinationChainSelector);
-      setChainReceiver(receiver);
-      setAllowanceCheckContract(checkAllowance);
-    } else if (activeChain?.chain === "sepolia" && secondChain === "mumbai") {
-      const destinationChainSelector = "12532609583862916517";
-      const receiver = Sepolia_to_mumbai_DestChainReceiver;
-      const checkAllowance = Sepolia_contract;
-
-      setDestinationState(destinationChainSelector);
-      setChainReceiver(receiver);
-      setAllowanceCheckContract(checkAllowance);
-    } else {
-      console.log("wrong network");
-    }
-  }, [destinationState, chainReceiver, allowanceCheckContract]);
 
   const feeToken = 1;
   const to = address;
 
-  const { mutateAsync: sendMessage, isLoading } = useContractWrite(
-    contract,
-    "sendMessage"
-  );
   const callSendMessage = async () => {
     try {
+      setLoading(true);
       const data = await sendMessage({
         args: [destinationState, chainReceiver, feeToken, to, amount],
       });
-      console.info("contract call successs", data);
+      console.info("contract call success", data);
+      toast.success("Transaction successful");
     } catch (err) {
       console.error("contract call failure", err);
+      toast.error(`Transaction failed: ${err.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
     }
   };
-  //function to check if the user has given the contract enought allowance
+
   const { contract: allowanceCheck } = useContract(allowanceCheckContract);
   const { data: allowanceData } = useContractRead(allowanceCheck, "allowance", [
     _owner,
-    _spender,
+    checkSourceChain,
   ]);
 
-  //function to check if the user has given the contract enought allowance
-  const { contract: getFunderBalanceData } = useContract(
-    Polygon_Mumbai_SourceChainSender
-  );
+  const { contract: getFunderBalanceData } = useContract(checkSourceChain);
   const { data: getFunderBalance } = useContractRead(
     getFunderBalanceData,
     "getFunderBalance",
     [funder]
   );
+
   useEffect(() => {
     const ethers = require("ethers");
     if (allowanceData?._hex) {
       const bigNumber = ethers.BigNumber.from(allowanceData._hex);
       const formatted = ethers.utils.formatUnits(bigNumber, 6);
       setFormattedNumber(formatted);
-
-      console.log(formattedNumber);
     } else {
       console.error("allowanceData._hex is undefined");
     }
@@ -136,17 +147,10 @@ export default function SingleCrossSwapInput() {
       const bigNumber = ethers.BigNumber.from(getFunderBalance._hex);
       const formattedFunderBalance = ethers.utils.formatUnits(bigNumber, 6);
       setGetFunderBalanceNumber(formattedFunderBalance);
-
-      console.log(formattedFunderBalance);
     } else {
       console.error("allowanceData._hex is undefined");
     }
-
-    console.log("allowanceData", formattedNumber);
-  }, [formattedNumber, _owner, _spender, getFunderBalanceNumber]);
-  // console.log("allowanceData", formattedNumber);
-  // console.log("getFunderBalanceNumber", getFunderBalanceNumber);
-  // console.log("amount", amount);
+  }, [formattedNumber, _owner, checkSourceChain, getFunderBalanceNumber]);
 
   return (
     <div>
@@ -179,39 +183,37 @@ export default function SingleCrossSwapInput() {
             formattedNumber &&
             formattedNumber >= amount ? (
               <div>
-                {/* Display the "Continue" button */}
                 <button
                   className={styles.crossChainBtn}
                   onClick={callSendMessage}
+                  disabled={loading}
                 >
                   Swap
-                </button>{" "}
+                </button>
               </div>
             ) : (
               <div>
                 {getFunderBalanceNumber && getFunderBalanceNumber >= amount ? (
-                  // Display the "Fund" button
                   <button
                     className={styles.crossChainBtn}
                     onClick={callSendMessage}
+                    disabled={loading}
                   >
-                    swap
+                    Swap
                   </button>
                 ) : formattedNumber && formattedNumber >= amount ? (
-                  // Display the "Allowance" button
                   <div>
                     <button
                       className={styles.crossChainBtn}
                       onClick={fundContract}
+                      disabled={loading}
                     >
                       Fund
                     </button>
                     <div className={styles.Tooltip_body}>
                       <Tooltip
                         className={styles.Tooltip}
-                        content="
-                        When users use Uniswap, Rhino, Sushiswap, or Aave, the platform will require users to first transfer tokens from their wallets to a contract, and then hand over another token of equal value to the user.                        
-                        "
+                        content="When users use Uniswap, Rhino, Sushiswap, or Aave, the platform will require users to first transfer tokens from their wallets to a contract, and then hand over another token of equal value to the user."
                         arrow={false}
                       >
                         <div className={styles.whyApprove}> Why Fund?</div>
