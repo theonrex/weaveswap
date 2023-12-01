@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSwitchChain, useChain } from "@thirdweb-dev/react";
-import { Dropdown } from "flowbite-react";
+import { useChain } from "@thirdweb-dev/react";
 import {
   Sepolia,
   OptimismGoerli,
@@ -16,12 +15,10 @@ import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useAppDispatch } from "@/redux/hooks";
 import { setSecondChain } from "@/redux/features/selectedChain";
+import { ChainType } from "@/types/chainType";
 
 export default function SecondNetworkModal() {
   const dispatch = useAppDispatch();
-
-  // Custom hook to get information about the current blockchain network
-  const chain = useChain();
 
   // State to keep track of the selected chain
   const [selectedChainState, setSelectedChainState] = useState<
@@ -29,9 +26,9 @@ export default function SecondNetworkModal() {
   >(localStorage.getItem("secondChain") || undefined);
 
   // State to keep track of the selected chain image URL
-  const [selectedChainImage, setSelectedChainImage] = useState<
-    string | undefined
-  >(localStorage.getItem("selectedChainImage") || undefined);
+  const [selectedChainImage, setSelectedChainImage] = useState<string>(
+    localStorage.getItem("selectedChainImage") || ""
+  );
 
   // Handler for the selection change in the dropdown
   const handleSelectChange = (value: string, imageUrl: string) => {
@@ -54,7 +51,8 @@ export default function SecondNetworkModal() {
     }
   }, [selectedChainState, dispatch]);
 
-  // console.log("selectedChainState", selectedChainState);
+  console.log("selectedChainState", selectedChainState);
+  console.log("selectedChainImage", selectedChainImage);
 
   return (
     <div>

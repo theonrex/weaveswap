@@ -1,8 +1,6 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
 import "flowbite";
-import { useState } from "react";
-
 import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { Provider } from "react-redux";

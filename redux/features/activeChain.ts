@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { Mumbai } from "@thirdweb-dev/chains";
+import { ChainType } from "@/types/chainType";
 
 // Define the structure of the chain state
 interface ChainState {
-  activeChain: typeof Mumbai | null;
+  activeChain: ChainType | null;
 }
 
 // Set the initial state for the chain slice
@@ -20,7 +20,7 @@ export const chainSlice = createSlice({
   // Define reducers for updating the chain state
   reducers: {
     // Reducer for setting the active chain
-    setActiveChain: (state, action: PayloadAction<typeof Mumbai | null>) => {
+    setActiveChain: (state, action: PayloadAction<ChainType | null>) => {
       // Update the activeChain state
       state.activeChain = action.payload;
     },

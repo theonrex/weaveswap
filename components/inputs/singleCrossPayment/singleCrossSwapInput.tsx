@@ -22,8 +22,7 @@ import ApproveModalPage from "@/components/modal/approve/approveModal";
 import { Tooltip } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { selectActiveChain } from "@/redux/features/activeChain";
-import { selectSecondChain } from "@/redux/features/selectedChain";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function SingleCrossSwapInput() {
@@ -52,7 +51,7 @@ export default function SingleCrossSwapInput() {
 
   useEffect(() => {
     if (
-      activeChain?.name.includes("mumbai") &&
+      activeChain?.name?.includes("mumbai") &&
       secondChain?.includes("sepolia")
     ) {
       setDestinationState("16015286601757825753");
@@ -60,7 +59,7 @@ export default function SingleCrossSwapInput() {
       setCheckSourceChain(Polygon_Mumbai_SourceChainSender);
       setAllowanceCheckContract(Mumbai_Approve_contract);
     } else if (
-      activeChain?.name.includes("sepolia") &&
+      activeChain?.name?.includes("sepolia") &&
       secondChain?.includes("mumbai")
     ) {
       setDestinationState("12532609583862916517");
@@ -68,7 +67,7 @@ export default function SingleCrossSwapInput() {
       setCheckSourceChain(Sepolia_to_mumbai_SourceChainSender);
       setAllowanceCheckContract(Sepolia_Approve_contract);
     } else if (
-      activeChain?.name.includes("Optimism Goerli Testnet") &&
+      activeChain?.name?.includes("Optimism Goerli Testnet") &&
       secondChain?.includes("Sepolia")
     ) {
       setDestinationState("16015286601757825753");
@@ -114,7 +113,7 @@ export default function SingleCrossSwapInput() {
       toast.success("Transaction successful");
     } catch (err) {
       console.error("contract call failure", err);
-      toast.error(`Transaction failed: ${err.message || "Unknown error"}`);
+      toast.error(`Transaction failed: ${err || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -162,7 +161,7 @@ export default function SingleCrossSwapInput() {
           <input
             name="quantity"
             defaultValue={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => setAmount(parseFloat(e.target.value))}
             className={styles.swapInput}
           />
         </div>

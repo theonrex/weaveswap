@@ -6,7 +6,6 @@ import {
   BaseGoerli,
   AvalancheFuji,
   Mumbai,
-  BaseSepoliaTestnet,
 } from "@thirdweb-dev/chains";
 import { Modal } from "flowbite-react";
 import styles from "./modal.module.css";
@@ -20,6 +19,7 @@ import {
   useChain,
   useConnectionStatus,
 } from "@thirdweb-dev/react";
+import { ChainType } from "@/types/chainType";
 
 // Array to store chain options
 const ChainOptions = [
@@ -46,7 +46,7 @@ const ChainOptions = [
 
 const FirstNetworkModal: React.FC = () => {
   const switchChain = useSwitchChain();
-  const chain = useChain();
+  const chain: ChainType | undefined = useChain();
   const [openModal, setOpenModal] = useState(false);
   const status = useConnectionStatus();
   const dispatch = useAppDispatch();
@@ -57,6 +57,8 @@ const FirstNetworkModal: React.FC = () => {
       dispatch(setActiveChain(chain));
     }
   }, [chain, dispatch]);
+
+  console.log("log", chain);
 
   // Function to render the connection status based on the network status
   const renderConnectionStatus = () => {
@@ -72,7 +74,7 @@ const FirstNetworkModal: React.FC = () => {
     }
   };
 
-  console.log(chain?.name);
+  console.log(chain);
   console.log(Sepolia.chainId);
 
   return (

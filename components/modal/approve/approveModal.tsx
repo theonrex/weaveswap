@@ -2,9 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useChain } from "@thirdweb-dev/react";
 import styles from "./approve.module.css";
-import Image from "next/image";
 import { MediaRenderer } from "@thirdweb-dev/react";
-import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import {
   Polygon_Mumbai_SourceChainSender,
@@ -17,10 +15,8 @@ import {
 import { Tooltip, Modal } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { selectActiveChain } from "@/redux/features/activeChain";
-import { selectSecondChain } from "@/redux/features/selectedChain";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { css } from "@emotion/react";
 import { ethers } from "ethers";
 import { Spinner } from "flowbite-react";
 // Main component
@@ -44,19 +40,19 @@ export default function ApproveModalPage() {
     console.log("Checking receiver on chains:", activeChain?.name, secondChain);
 
     if (
-      activeChain?.name.includes("mumbai") &&
+      activeChain?.name?.includes("mumbai") &&
       secondChain?.includes("sepolia")
     ) {
       setSpender(Polygon_Mumbai_SourceChainSender);
       setApprove_contract(Mumbai_Approve_contract);
     } else if (
-      activeChain?.name.includes("sepolia") &&
+      activeChain?.name?.includes("sepolia") &&
       secondChain?.includes("mumbai")
     ) {
       setSpender(Sepolia_to_mumbai_SourceChainSender);
       setApprove_contract(Sepolia_Approve_contract);
     } else if (
-      activeChain?.name.includes("Optimism Goerli Testnet") &&
+      activeChain?.name?.includes("Optimism Goerli Testnet") &&
       secondChain?.includes("Sepolia")
     ) {
       setSpender(Optimism_to_Eth_Sepolia_SourceChainSender);
@@ -81,7 +77,7 @@ export default function ApproveModalPage() {
       setOpenModal(false);
     } catch (err) {
       console.error("contract call failure", err);
-      toast.error(`Transaction failed: ${err.message}`);
+      toast.error(`Transaction failed: ${err}`);
     } finally {
       setLoading(false);
     }
