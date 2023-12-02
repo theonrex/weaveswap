@@ -1,10 +1,23 @@
 import React from "react";
+import dynamic from "next/dynamic";
+
 import styles from "./index.module.css";
-import SingleCrossSwapInput from "@/components/inputs/singleCrossPayment/singleCrossSwapInput";
-import ConnectWalletPage from "@/components/connectWalletPage";
+
+const ConnectWalletPage = dynamic(
+  () => import("@/components/connectWalletPage")
+);
+const FirstNetworkModal = dynamic(
+  () => import("@/components/modal/firstNetworkModalPage")
+);
+const SecondNetworkModal = dynamic(
+  () => import("@/components/modal/secondNetworkModal")
+);
+
+const DynamicCrossSwapInput = dynamic(
+  () => import(`@/components/inputs/singleCrossPayment/singleCrossSwapInput`)
+);
+import CoinPrice from "@/components/coinPrice/Coinprice";
 import { useAddress } from "@thirdweb-dev/react";
-import FirstNetworkModal from "@/components/modal/firstNetworkModalPage";
-import SecondNetworkModal from "@/components/modal/secondNetworkModal";
 export default function SwapContainer() {
   const address = useAddress();
   if (!address)
@@ -18,16 +31,12 @@ export default function SwapContainer() {
     <div className={styles.SwapContainer}>
       <h1 className={styles.TradeTag}>Swap</h1>
 
-      <p className={styles.coinDetailsTag}>
-        1 SUSHI ($0.97) = 0.0004734 ETH ($2.05k)
-      </p>
-
+      <div className={styles.coinDetailsTag}>
+        <CoinPrice />
+      </div>
       <div className={styles.crossChainSection}>
         <section className={`${styles.crossChain_Header}`}>
-          <h4>{/* Cross Chain Swap */}</h4>
-          <button>
-            <h4>Multi cross</h4>
-          </button>
+          <h4>Cross Chain Swap</h4>
         </section>
         <div>
           <section>
@@ -38,7 +47,7 @@ export default function SwapContainer() {
             </div>
             <hr />
             <div>
-              <SingleCrossSwapInput />
+              <DynamicCrossSwapInput />
             </div>
           </section>
         </div>

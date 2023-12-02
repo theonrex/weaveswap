@@ -26,6 +26,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function SingleCrossSwapInput() {
+  // Check if the code is running on the client side
+  const isClient = typeof window !== "undefined";
   const [formattedNumber, setFormattedNumber] = useState<number | undefined>(
     undefined
   );
@@ -47,7 +49,7 @@ export default function SingleCrossSwapInput() {
   const funder = address;
 
   const activeChain = useSelector(selectActiveChain);
-  const secondChain = localStorage.getItem("secondChain");
+  const secondChain = isClient ? localStorage.getItem("secondChain") : "";
 
   useEffect(() => {
     if (

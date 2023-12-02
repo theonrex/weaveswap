@@ -20,14 +20,19 @@ import { ChainType } from "@/types/chainType";
 export default function SecondNetworkModal() {
   const dispatch = useAppDispatch();
 
+  // Check if the code is running on the client side
+  const isClient = typeof window !== "undefined";
+
   // State to keep track of the selected chain
-  const [selectedChainState, setSelectedChainState] = useState<
-    string | undefined
-  >(localStorage.getItem("secondChain") || undefined);
+  const [selectedChainState, setSelectedChainState] = useState<string | "">(
+    isClient
+      ? (JSON.parse(localStorage.getItem("secondChain")!) as string) || ""
+      : ""
+  );
 
   // State to keep track of the selected chain image URL
   const [selectedChainImage, setSelectedChainImage] = useState<string>(
-    localStorage.getItem("selectedChainImage") || ""
+    isClient ? localStorage?.getItem("selectedChainImage") || "" : ""
   );
 
   // Handler for the selection change in the dropdown
@@ -43,13 +48,13 @@ export default function SecondNetworkModal() {
 
   useEffect(() => {
     // Set the active chain in the Redux store when the chain changes
-    if (selectedChainState) {
+    if (selectedChainState && isClient) {
       dispatch(setSecondChain(selectedChainState));
 
       // Store the selected chain in local storage
-      localStorage.setItem("selectedChainImage", selectedChainImage);
+      localStorage.setItem("secondChain", JSON.stringify(selectedChainState));
     }
-  }, [selectedChainState, dispatch]);
+  }, [selectedChainState, dispatch, selectedChainImage, isClient]);
 
   console.log("selectedChainState", selectedChainState);
   console.log("selectedChainImage", selectedChainImage);
