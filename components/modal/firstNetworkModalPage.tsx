@@ -118,7 +118,6 @@ const FirstNetworkModal: React.FC = () => {
                 <button key={option.id} onClick={() => switchChain(option.id)}>
                   <MediaRenderer src={option.icon.url} />
                   {option.name}
-                  {option.id}
                 </button>
               ))}
             </div>

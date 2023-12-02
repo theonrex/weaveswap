@@ -1,23 +1,13 @@
 import React from "react";
-import dynamic from "next/dynamic";
-
 import styles from "./index.module.css";
 
-const ConnectWalletPage = dynamic(
-  () => import("@/components/connectWalletPage")
-);
-const FirstNetworkModal = dynamic(
-  () => import("@/components/modal/firstNetworkModalPage")
-);
-const SecondNetworkModal = dynamic(
-  () => import("@/components/modal/secondNetworkModal")
-);
-
-const DynamicCrossSwapInput = dynamic(
-  () => import(`@/components/inputs/singleCrossPayment/singleCrossSwapInput`)
-);
-import CoinPrice from "@/components/coinPrice/Coinprice";
+import SingleCrossSwapInput from "@/components/inputs/singleCrossPayment/singleCrossSwapInput";
+import ConnectWalletPage from "@/components/connectWalletPage";
 import { useAddress } from "@thirdweb-dev/react";
+import FirstNetworkModal from "@/components/modal/firstNetworkModalPage";
+import SecondNetworkModal from "@/components/modal/secondNetworkModal";
+
+import CoinPrice from "@/components/coinPrice/Coinprice";
 export default function SwapContainer() {
   const address = useAddress();
   if (!address)
@@ -47,7 +37,7 @@ export default function SwapContainer() {
             </div>
             <hr />
             <div>
-              <DynamicCrossSwapInput />
+              <SingleCrossSwapInput />
             </div>
           </section>
         </div>

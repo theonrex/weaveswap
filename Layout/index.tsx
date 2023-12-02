@@ -11,6 +11,7 @@ import {
 import { selectActiveChain } from "@/redux/features/activeChain";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import Navbar from "@/components/nav/navbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const currentChain = useSelector(selectActiveChain);
@@ -38,6 +39,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         trustWallet({ recommended: true }),
       ]}
     >
+      {" "}
+      <Navbar />
       {children}
       <ToastContainer />
     </ThirdwebProvider>
