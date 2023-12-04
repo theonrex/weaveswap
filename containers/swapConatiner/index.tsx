@@ -19,14 +19,14 @@ export default function SwapContainer() {
 
   return (
     <div className={styles.SwapContainer}>
-      <h1 className={styles.TradeTag}>Swap</h1>
+      {/* <h1 className={styles.crossChain_Header}>Cross Chain Swap</h1> */}
 
       <div className={styles.coinDetailsTag}>
         <CoinPrice />
       </div>
       <div className={styles.crossChainSection}>
         <section className={`${styles.crossChain_Header}`}>
-          <h4>Cross Chain Swap</h4>
+          {/* <h4></h4> */}
         </section>
         <div>
           <section>

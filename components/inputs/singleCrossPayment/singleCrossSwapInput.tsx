@@ -167,9 +167,7 @@ export default function SingleCrossSwapInput() {
             className={styles.swapInput}
           />
         </div>
-        <div>
-          <TokensDropdown />
-        </div>
+        <div>{/* <TokensDropdown /> */}</div>
       </div>
       <div className={styles.crossChainBctn}>{}</div>
       <div className={styles.crossChainBtnc}>

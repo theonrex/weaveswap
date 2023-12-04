@@ -2,11 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Kanit&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@400&display=swap");
+
 :root {
-  --foreground-rgb: red;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --button_color: #450047;
+  --button_color: rgba(1, 79, 35, 0.784);
 }
 
 @media (prefers-color-scheme: dark) {

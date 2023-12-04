@@ -6,7 +6,7 @@
 .activeChain {
   display: flex;
   align-items: center;
-  background-color: blueviolet;
+  background-color: rgb(83, 226, 43);
   padding: 1em 2em;
   width: 100%;
   border-radius: 0.8em;
@@ -84,7 +84,7 @@
 }
 
 .approveBtn {
-  background-color: blueviolet;
+  background-color: rgb(101, 226, 43);
   width: 100%;
   padding: 1em 2em;
   margin: 1em auto;

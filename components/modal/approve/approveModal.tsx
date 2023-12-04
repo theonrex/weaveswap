@@ -136,7 +136,7 @@ export default function ApproveModalPage() {
                 onClick={call}
                 disabled={loading}
               >
-                {loading ? <Spinner /> : "Call Approve"}
+                {loading ? <Spinner /> : " Approve Token"}
               </button>
             </div>
           </div>

@@ -12,7 +12,7 @@ import { selectActiveChain } from "@/redux/features/activeChain";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Navbar from "@/components/nav/navbar";
-
+import FooterBody from "@/components/footer/Footer";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const currentChain = useSelector(selectActiveChain);
 
@@ -42,6 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {" "}
       <Navbar />
       {children}
+      <FooterBody />
       <ToastContainer />
     </ThirdwebProvider>
   );

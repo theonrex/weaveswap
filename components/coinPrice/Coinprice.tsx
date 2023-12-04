@@ -20,7 +20,11 @@ const CoinPrice: React.FC = () => {
   }, []);
 
   return (
-    <p>{tokenPrice !== null && <p>Chainlink (${tokenPrice.toFixed(2)})</p>}</p>
+    <p>
+      {tokenPrice !== null && (
+        <p>Chainlink Current Price (${tokenPrice.toFixed(2)})</p>
+      )}
+    </p>
   );
 };
 
