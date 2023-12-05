@@ -14,13 +14,13 @@ import { ToastContainer } from "react-toastify";
 import Navbar from "@/components/nav/navbar";
 import FooterBody from "@/components/footer/Footer";
 import Head from "next/head";
-
+import { Sepolia } from "@thirdweb-dev/chains";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const currentChain = useSelector(selectActiveChain);
 
   return (
     <ThirdwebProvider
-      activeChain={currentChain?.chainId}
+      activeChain={Sepolia || currentChain}
       clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
       supportedWallets={[
         metamaskWallet(),

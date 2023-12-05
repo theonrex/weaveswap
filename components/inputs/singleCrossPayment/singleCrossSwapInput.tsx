@@ -16,6 +16,15 @@ import {
   Optimism_Approve_contract,
   Sepolia_to_mumbai_SourceChainSender,
   Optimism_to_Eth_Sepolia_SourceChainSender,
+  BSC_Testnet_to_Eth_Sepolia_DestChainReceiver,
+  BSC_Testnet_to_Eth_Sepolia_SourceChainSender,
+  BSC_Testnet_Approve_contract,
+  Base_Goerli_to_Eth_Sepolia_DestChainReceiver,
+  Base_Goerli_to_Eth_Sepolia_SourceChainSender,
+  Base_Goerli_Approve_contract,
+  Avalanche_Fuji_to_Eth_Sepolia_DestChainReceiver,
+  Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender,
+  Avalanche_Fuji_Approve_contract,
 } from "@/constants/address";
 import { useAddress } from "@thirdweb-dev/react";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
@@ -76,6 +85,30 @@ export default function SingleCrossSwapInput() {
       setChainReceiver(Optimism_to_Eth_Sepolia_DestChainReceiver);
       setCheckSourceChain(Optimism_to_Eth_Sepolia_SourceChainSender);
       setAllowanceCheckContract(Optimism_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("BSC Testnet") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setDestinationState("16015286601757825753");
+      setChainReceiver(BSC_Testnet_to_Eth_Sepolia_DestChainReceiver);
+      setCheckSourceChain(BSC_Testnet_to_Eth_Sepolia_SourceChainSender);
+      setAllowanceCheckContract(BSC_Testnet_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("Base Goerli") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setDestinationState("16015286601757825753");
+      setChainReceiver(Base_Goerli_to_Eth_Sepolia_DestChainReceiver);
+      setCheckSourceChain(Base_Goerli_to_Eth_Sepolia_SourceChainSender);
+      setAllowanceCheckContract(Base_Goerli_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("Avalanche Fuji") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setDestinationState("16015286601757825753");
+      setChainReceiver(Avalanche_Fuji_to_Eth_Sepolia_DestChainReceiver);
+      setCheckSourceChain(Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender);
+      setAllowanceCheckContract(Avalanche_Fuji_Approve_contract);
     } else {
       setErrorMessage("wrong network");
     }

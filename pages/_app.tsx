@@ -1,13 +1,29 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
 import "flowbite";
-import { WagmiConfig, createConfig, configureChains, mainnet } from "wagmi";
+import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import Layout from "../Layout/index";
+import {
+  bscTestnet,
+  baseGoerli,
+  avalancheFuji,
+  polygonMumbai,
+  optimismGoerli,
+  sepolia,
+} from "wagmi/chains";
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet],
+  [
+    bscTestnet,
+    baseGoerli,
+    avalancheFuji,
+    polygonMumbai,
+    optimismGoerli,
+    sepolia,
+  ],
   [publicProvider()]
 );
 

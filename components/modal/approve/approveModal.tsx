@@ -5,12 +5,24 @@ import styles from "./approve.module.css";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import { useContract, useContractWrite } from "@thirdweb-dev/react";
 import {
+  //mumbai to sepolia
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
+  //sepolia to mumbai
   Sepolia_to_mumbai_SourceChainSender,
   Sepolia_Approve_contract,
+  // Optimism_to_Eth_Sepolia -> Eth_Sepolia
   Optimism_to_Eth_Sepolia_SourceChainSender,
   Optimism_Approve_contract,
+  // BSC_Testnet _to_Eth_Sepolia -> Eth_Sepolia
+  BSC_Testnet_to_Eth_Sepolia_SourceChainSender,
+  BSC_Testnet_Approve_contract,
+  // Base_Goerli _to_Eth_Sepolia -> Eth_Sepolia
+  Base_Goerli_to_Eth_Sepolia_SourceChainSender,
+  Base_Goerli_Approve_contract,
+  // Avalanche_Fuji _to_Eth_Sepolia -> Eth_Sepolia
+  Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender,
+  Avalanche_Fuji_Approve_contract,
 } from "@/constants/address";
 import { Tooltip, Modal } from "flowbite-react";
 import { useSelector } from "react-redux";
@@ -40,23 +52,45 @@ export default function ApproveModalPage() {
     console.log("Checking receiver on chains:", activeChain?.name, secondChain);
 
     if (
-      activeChain?.name?.includes("mumbai") &&
-      secondChain?.includes("sepolia")
+      (activeChain?.name?.includes("mumbai") &&
+        secondChain?.includes("sepolia")) ||
+      (activeChain?.name?.includes("sepolia") &&
+        secondChain?.includes("mumbai"))
     ) {
-      setSpender(Polygon_Mumbai_SourceChainSender);
-      setApprove_contract(Mumbai_Approve_contract);
-    } else if (
-      activeChain?.name?.includes("sepolia") &&
-      secondChain?.includes("mumbai")
-    ) {
-      setSpender(Sepolia_to_mumbai_SourceChainSender);
-      setApprove_contract(Sepolia_Approve_contract);
+      setSpender(
+        activeChain?.name?.includes("mumbai")
+          ? Polygon_Mumbai_SourceChainSender
+          : Sepolia_to_mumbai_SourceChainSender
+      );
+      setApprove_contract(
+        activeChain?.name?.includes("mumbai")
+          ? Mumbai_Approve_contract
+          : Sepolia_Approve_contract
+      );
     } else if (
       activeChain?.name?.includes("Optimism Goerli Testnet") &&
       secondChain?.includes("Sepolia")
     ) {
       setSpender(Optimism_to_Eth_Sepolia_SourceChainSender);
       setApprove_contract(Optimism_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("BSC Testnet") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setSpender(BSC_Testnet_to_Eth_Sepolia_SourceChainSender);
+      setApprove_contract(BSC_Testnet_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("Base Goerli") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setSpender(Base_Goerli_to_Eth_Sepolia_SourceChainSender);
+      setApprove_contract(Base_Goerli_Approve_contract);
+    } else if (
+      activeChain?.name?.includes("Avalanche Fuji") &&
+      secondChain?.includes("Sepolia")
+    ) {
+      setSpender(Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender);
+      setApprove_contract(Avalanche_Fuji_Approve_contract);
     } else {
       console.log("wrong network");
     }

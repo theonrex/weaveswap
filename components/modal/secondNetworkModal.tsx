@@ -127,19 +127,19 @@ export default function SecondNetworkModal() {
                   <MediaRenderer src={Sepolia.icon.url} />
                   Sepolia
                 </button>
-
+                {/* 
                 {/* Button for Mumbai chain */}
-                <button
+                {/* <button
                   onClick={() =>
                     handleSelectChange(Mumbai.name, Mumbai.icon.url)
                   }
                 >
                   <MediaRenderer src={Mumbai.icon.url} />
                   Mumbai
-                </button>
+                </button> */}
 
                 {/* Button for AvalancheFuji chain */}
-                <button
+                {/* <button
                   onClick={() =>
                     handleSelectChange(
                       AvalancheFuji.name,
@@ -149,20 +149,20 @@ export default function SecondNetworkModal() {
                 >
                   <MediaRenderer src={AvalancheFuji.icon.url} />
                   AvalancheFuji
-                </button>
+                </button> */}
 
                 {/* Button for BaseGoerli chain */}
-                <button
+                {/* <button
                   onClick={() =>
                     handleSelectChange(BaseGoerli.name, BaseGoerli.icon.url)
                   }
                 >
                   <MediaRenderer src={BaseGoerli.icon.url} />
                   BaseGoerli
-                </button>
+                </button> */}
 
                 {/* Button for OptimismGoerli chain */}
-                <button
+                {/* <button
                   onClick={() =>
                     handleSelectChange(
                       OptimismGoerli.name,
@@ -172,10 +172,10 @@ export default function SecondNetworkModal() {
                 >
                   <MediaRenderer src={OptimismGoerli.icon.url} />
                   OptimismGoerli
-                </button>
+                </button> */}
 
                 {/* Button for BinanceTestnet chain */}
-                <button
+                {/* <button
                   onClick={() =>
                     handleSelectChange(
                       BinanceTestnet.name,
@@ -185,7 +185,7 @@ export default function SecondNetworkModal() {
                 >
                   <MediaRenderer src={BinanceTestnet.icon.url} />
                   BinanceTestnet
-                </button>
+                </button>  */}
               </div>
             </div>
           </Modal.Body>

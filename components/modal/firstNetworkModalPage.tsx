@@ -24,7 +24,7 @@ import { ChainType } from "@/types/chainType";
 // Array to store chain options
 const ChainOptions = [
   { id: Mumbai.chainId, name: "Mumbai", icon: Mumbai.icon },
-  { id: Sepolia.chainId, name: "sepolia", icon: Sepolia.icon },
+  { id: Sepolia.chainId, name: "Sepolia", icon: Sepolia.icon },
 
   {
     id: AvalancheFuji.chainId,
