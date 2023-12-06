@@ -56,8 +56,8 @@ export default function SecondNetworkModal() {
     }
   }, [selectedChainState, dispatch, selectedChainImage, isClient]);
 
-  console.log("selectedChainState", selectedChainState);
-  console.log("selectedChainImage", selectedChainImage);
+  // console.log("selectedChainState", selectedChainState);
+  // console.log("selectedChainImage", selectedChainImage);
 
   return (
     <div>
@@ -71,7 +71,7 @@ export default function SecondNetworkModal() {
           {selectedChainImage && <MediaRenderer src={selectedChainImage} />}
           {/* Display the selected chain name */}
           <h4>
-            {selectedChainState ? String(selectedChainState) : ` Wallet`}
+            {selectedChainState ? String(selectedChainState) : ` Select Chain`}
           </h4>{" "}
           {/* Dropdown icon */}
           <Image

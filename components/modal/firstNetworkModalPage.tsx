@@ -74,8 +74,8 @@ const FirstNetworkModal: React.FC = () => {
     }
   };
 
-  console.log(chain);
-  console.log(Sepolia.chainId);
+  // console.log(chain);
+  // console.log(Sepolia.chainId);
 
   return (
     <div>

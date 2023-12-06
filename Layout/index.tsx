@@ -20,7 +20,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <ThirdwebProvider
-      activeChain={Sepolia || currentChain}
       clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
       supportedWallets={[
         metamaskWallet(),

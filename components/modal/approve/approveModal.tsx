@@ -51,55 +51,61 @@ export default function ApproveModalPage() {
   useEffect(() => {
     console.log("Checking receiver on chains:", activeChain?.name, secondChain);
 
-    if (
-      (activeChain?.name?.includes("mumbai") &&
-        secondChain?.includes("sepolia")) ||
-      (activeChain?.name?.includes("sepolia") &&
-        secondChain?.includes("mumbai"))
-    ) {
-      setSpender(
-        activeChain?.name?.includes("mumbai")
-          ? Polygon_Mumbai_SourceChainSender
-          : Sepolia_to_mumbai_SourceChainSender
-      );
-      setApprove_contract(
-        activeChain?.name?.includes("mumbai")
-          ? Mumbai_Approve_contract
-          : Sepolia_Approve_contract
-      );
-    } else if (
-      activeChain?.name?.includes("Optimism Goerli Testnet") &&
-      secondChain?.includes("Sepolia")
-    ) {
-      setSpender(Optimism_to_Eth_Sepolia_SourceChainSender);
-      setApprove_contract(Optimism_Approve_contract);
-    } else if (
-      activeChain?.name?.includes("BSC Testnet") &&
-      secondChain?.includes("Sepolia")
-    ) {
-      setSpender(BSC_Testnet_to_Eth_Sepolia_SourceChainSender);
-      setApprove_contract(BSC_Testnet_Approve_contract);
-    } else if (
-      activeChain?.name?.includes("Base Goerli") &&
-      secondChain?.includes("Sepolia")
-    ) {
-      setSpender(Base_Goerli_to_Eth_Sepolia_SourceChainSender);
-      setApprove_contract(Base_Goerli_Approve_contract);
-    } else if (
-      activeChain?.name?.includes("Avalanche Fuji") &&
-      secondChain?.includes("Sepolia")
-    ) {
-      setSpender(Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender);
-      setApprove_contract(Avalanche_Fuji_Approve_contract);
-    } else {
-      console.log("wrong network");
+    let newSpender = "";
+    let newApproveContract = "";
+
+    if (activeChain && secondChain) {
+      const activeChainName = activeChain?.name?.toLowerCase();
+      const secondChainName = secondChain.toLowerCase();
+
+      if (
+        activeChainName?.includes("mumbai") &&
+        secondChainName?.includes("sepolia")
+      ) {
+        newApproveContract = Mumbai_Approve_contract;
+
+        newSpender = Polygon_Mumbai_SourceChainSender;
+      } else if (
+        activeChainName?.includes("optimism goerli testnet") &&
+        secondChainName.includes("sepolia")
+      ) {
+        newSpender = Optimism_to_Eth_Sepolia_SourceChainSender;
+        newApproveContract = Optimism_Approve_contract;
+      } else if (
+        activeChainName?.includes("bsc testnet") &&
+        secondChainName.includes("sepolia")
+      ) {
+        newSpender = BSC_Testnet_to_Eth_Sepolia_SourceChainSender;
+        newApproveContract = BSC_Testnet_Approve_contract;
+      } else if (
+        activeChainName?.includes("base goerli") &&
+        secondChainName.includes("sepolia")
+      ) {
+        newSpender = Base_Goerli_to_Eth_Sepolia_SourceChainSender;
+        newApproveContract = Base_Goerli_Approve_contract;
+      } else if (
+        activeChainName?.includes("avalanche fuji") &&
+        secondChainName.includes("sepolia")
+      ) {
+        newSpender = Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender;
+        newApproveContract = Avalanche_Fuji_Approve_contract;
+      } else {
+        console.log("Wrong network");
+      }
     }
+
+    setSpender(newSpender);
+    setApprove_contract(newApproveContract);
   }, [activeChain, secondChain]);
 
   // Contract hooks
-  const { contract } = useContract(approve_contract);
-  const { mutateAsync: approve } = useContractWrite(contract, "approve");
-
+  const { contract } = useContract(
+    "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
+  );
+  const { mutateAsync: approve, isLoading } = useContractWrite(
+    contract,
+    "approve"
+  );
   // Function to handle contract call
   const call = async () => {
     try {
@@ -116,6 +122,8 @@ export default function ApproveModalPage() {
       setLoading(false);
     }
   };
+  // console.log("contract", contract);
+  // console.log("approve_contract", approve_contract);
 
   // Render component
   return (
@@ -142,7 +150,7 @@ export default function ApproveModalPage() {
         onClose={() => setOpenModal(false)}
       >
         <Modal.Header className={styles.ModalHeader}>
-          <h2> Approve</h2>
+          <span> Approve</span>
           <p>
             Select a chain from our default list or search for a token by symbol
             or address.
