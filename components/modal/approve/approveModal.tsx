@@ -99,9 +99,7 @@ export default function ApproveModalPage() {
   }, [activeChain, secondChain]);
 
   // Contract hooks
-  const { contract } = useContract(
-    "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"
-  );
+  const { contract } = useContract(`${approve_contract}`);
   const { mutateAsync: approve, isLoading } = useContractWrite(
     contract,
     "approve"
