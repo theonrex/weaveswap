@@ -77,7 +77,7 @@ const FirstNetworkModal: React.FC = () => {
             {/* Display available chain options */}
             <div className={styles.SwitchChains}>
               {ChainOptions.map((option) => (
-                <div>
+                <div key={option.id}>
                   <button
                     disabled={!switchNetwork || option.id === chain?.id}
                     key={option.id}

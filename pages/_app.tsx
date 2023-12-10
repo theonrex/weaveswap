@@ -4,36 +4,19 @@ import "flowbite";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import Layout from "../Layout/index";
-// import {
-//   bscTestnet,
-//   baseGoerli,
-//   avalancheFuji,
-//   polygonMumbai,
-//   optimismGoerli,
-//   sepolia,
-// } from "wagmi/chains";
+
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
-  bscTestnet,
-  baseGoerli,
-  avalancheFuji,
-  polygonMumbai,
-  optimismGoerli,
-  sepolia,
-} from "wagmi/chains";
+  getDefaultWallets,
+  RainbowKitProvider,
+  darkTheme,
+} from "@rainbow-me/rainbowkit";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { bscTestnet, polygonMumbai, sepolia } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 const { chains, publicClient } = configureChains(
-  [
-    bscTestnet,
-    baseGoerli,
-    avalancheFuji,
-    polygonMumbai,
-    optimismGoerli,
-    sepolia,
-  ],
+  [bscTestnet, polygonMumbai, sepolia],
   [publicProvider()]
 );
 const { connectors } = getDefaultWallets({
@@ -52,7 +35,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       {" "}
       <WagmiConfig config={wagmiConfig}>
         {" "}
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider
+          chains={chains}
+          theme={darkTheme({
+            accentColor: "#00df07",
+
+            accentColorForeground: "white",
+            borderRadius: "medium",
+          })}
+        >
           {" "}
           <Layout>
             <Component {...pageProps} />{" "}
