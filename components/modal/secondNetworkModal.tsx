@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useChain } from "@thirdweb-dev/react";
 import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
+  bscTestnet,
+  baseGoerli,
+  avalancheFuji,
+  polygonMumbai,
+  optimismGoerli,
+  sepolia,
+} from "wagmi/chains";
 import { Modal } from "flowbite-react";
 import styles from "./modal.module.css";
 import Image from "next/image";
-import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useAppDispatch } from "@/redux/hooks";
 import { setSecondChain } from "@/redux/features/selectedChain";
@@ -36,11 +35,9 @@ export default function SecondNetworkModal() {
   );
 
   // Handler for the selection change in the dropdown
-  const handleSelectChange = (value: string, imageUrl: string) => {
+  const handleSelectChange = (value: string) => {
     // Update the selectedChain state with the chosen value
     setSelectedChainState(value);
-    // Update the selectedChainImage state with the corresponding image URL
-    setSelectedChainImage(imageUrl);
   };
 
   // State to control the modal's visibility
@@ -68,7 +65,7 @@ export default function SecondNetworkModal() {
           className={styles.activeChain}
         >
           {/* Display the selected chain image */}
-          {selectedChainImage && <MediaRenderer src={selectedChainImage} />}
+          {/* {selectedChainImage && <MediaRenderer src={selectedChainImage} />} */}
           {/* Display the selected chain name */}
           <h4>
             {selectedChainState ? String(selectedChainState) : ` Select Chain`}
@@ -104,9 +101,9 @@ export default function SecondNetworkModal() {
               {/* Button to display the selected chain in the modal */}
               <button className={styles.activeChain}>
                 {/* Display the selected chain image in the modal */}
-                {selectedChainImage && (
+                {/* {selectedChainImage && (
                   <MediaRenderer src={selectedChainImage} />
-                )}
+                )} */}
                 {/* Display the selected chain name in the modal */}
                 <h4>
                   {" "}
@@ -119,12 +116,8 @@ export default function SecondNetworkModal() {
               {/* List of chain buttons to switch between chains */}
               <div className={styles.SwitchChains}>
                 {/* Button for Sepolia chain */}
-                <button
-                  onClick={() =>
-                    handleSelectChange(Sepolia.name, Sepolia.icon.url)
-                  }
-                >
-                  <MediaRenderer src={Sepolia.icon.url} />
+                <button onClick={() => handleSelectChange(sepolia.name)}>
+                  {/* <MediaRenderer src={Sepolia.icon.url} /> */}
                   Sepolia
                 </button>
                 {/* 

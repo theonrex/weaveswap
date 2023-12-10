@@ -1,87 +1,49 @@
 import React, { useState, useEffect } from "react";
-import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
+import { bscTestnet, polygonMumbai } from "wagmi/chains";
+import { useNetwork } from "wagmi";
+
 import { Modal } from "flowbite-react";
 import styles from "./modal.module.css";
 import Image from "next/image";
-import { MediaRenderer } from "@thirdweb-dev/react";
 import dropDownIcon from "../../assets/png/dropdownIcon.png";
 import { useAppDispatch } from "@/redux/hooks";
 import { setActiveChain } from "@/redux/features/activeChain";
-import {
-  useSwitchChain,
-  useChain,
-  useConnectionStatus,
-} from "@thirdweb-dev/react";
+import { useSwitchNetwork } from "wagmi";
+
 import { ChainType } from "@/types/chainType";
 
 // Array to store chain options
 const ChainOptions = [
-  { id: Mumbai.chainId, name: "Mumbai", icon: Mumbai.icon },
-  { id: Sepolia.chainId, name: "Sepolia", icon: Sepolia.icon },
+  { id: polygonMumbai.id, name: "Mumbai" },
 
   {
-    id: AvalancheFuji.chainId,
-    name: "AvalancheFuji",
-    icon: AvalancheFuji.icon,
-  },
-  { id: BaseGoerli.chainId, name: "BaseGoerli", icon: BaseGoerli.icon },
-  {
-    id: OptimismGoerli.chainId,
-    name: "OptimismGoerli",
-    icon: OptimismGoerli.icon,
-  },
-  {
-    id: BinanceTestnet.chainId,
+    id: bscTestnet.id,
     name: "BinanceTestnet",
-    icon: BinanceTestnet.icon,
+    icon: bscTestnet,
   },
 ];
 
 const FirstNetworkModal: React.FC = () => {
-  const switchChain = useSwitchChain();
-  const chain: ChainType | undefined = useChain();
   const [openModal, setOpenModal] = useState(false);
-  const status = useConnectionStatus();
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    // Set the active chain in the Redux store when the chain changes
-    if (chain) {
-      dispatch(setActiveChain(chain));
-    }
-  }, [chain, dispatch]);
+  const { chain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } =
+    useSwitchNetwork();
 
   console.log("log", chain);
 
   // Function to render the connection status based on the network status
   const renderConnectionStatus = () => {
-    switch (status) {
-      case "unknown":
-        return <div>Loading...</div>;
-      case "disconnected":
-        return <div>Disconnected</div>;
-      case "connecting":
-        return <div>Connecting...</div>;
-      default:
-        return chain ? <h4>{chain?.name}</h4> : <h4>Unsupported network</h4>;
-    }
+    return chain ? <h4>{chain?.name}</h4> : <h4>Unsupported network</h4>;
   };
-
   // console.log(chain);
-  // console.log(Sepolia.chainId);
+  // console.log(Sepolia.id);
 
   return (
     <div>
       {/* Button to open the modal */}
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
-        <MediaRenderer src={chain?.icon?.url} />
+        {/* <MediaRenderer src={chain?.icon?.url} /> */}
         {renderConnectionStatus()}
 
         <Image
@@ -109,17 +71,26 @@ const FirstNetworkModal: React.FC = () => {
           <div className="space-y-6">
             {/* Display the active chain in the modal */}
             <button className={styles.activeChain}>
-              <MediaRenderer src={chain?.icon?.url} />
+              {/* <MediaRenderer src={chain?.icon?.url} /> */}
               {renderConnectionStatus()}
             </button>
             {/* Display available chain options */}
             <div className={styles.SwitchChains}>
               {ChainOptions.map((option) => (
-                <button key={option.id} onClick={() => switchChain(option.id)}>
-                  <MediaRenderer src={option.icon.url} />
-                  {option.name}
-                </button>
+                <div>
+                  <button
+                    disabled={!switchNetwork || option.id === chain?.id}
+                    key={option.id}
+                    onClick={() => switchNetwork?.(option.id)}
+                  >
+                    {option.name}
+                    {isLoading &&
+                      pendingChainId === option.id &&
+                      " (switching)"}
+                  </button>
+                </div>
               ))}
+              <div>{error && error.message}</div>
             </div>
           </div>
         </Modal.Body>

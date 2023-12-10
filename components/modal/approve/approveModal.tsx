@@ -1,28 +1,16 @@
 // Import necessary libraries and components
 import React, { useState, useEffect } from "react";
-import { useChain } from "@thirdweb-dev/react";
 import styles from "./approve.module.css";
-import { MediaRenderer } from "@thirdweb-dev/react";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import { useContractRead } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import {
   //mumbai to sepolia
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
   //sepolia to mumbai
-  Sepolia_to_mumbai_SourceChainSender,
-  Sepolia_Approve_contract,
-  // Optimism_to_Eth_Sepolia -> Eth_Sepolia
-  Optimism_to_Eth_Sepolia_SourceChainSender,
-  Optimism_Approve_contract,
   // BSC_Testnet _to_Eth_Sepolia -> Eth_Sepolia
   BSC_Testnet_to_Eth_Sepolia_SourceChainSender,
   BSC_Testnet_Approve_contract,
-  // Base_Goerli _to_Eth_Sepolia -> Eth_Sepolia
-  Base_Goerli_to_Eth_Sepolia_SourceChainSender,
-  Base_Goerli_Approve_contract,
-  // Avalanche_Fuji _to_Eth_Sepolia -> Eth_Sepolia
-  Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender,
-  Avalanche_Fuji_Approve_contract,
 } from "@/constants/address";
 import { Tooltip, Modal } from "flowbite-react";
 import { useSelector } from "react-redux";
@@ -31,10 +19,12 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import { Spinner } from "flowbite-react";
+import { useNetwork } from "wagmi";
+
 // Main component
 export default function ApproveModalPage() {
   // Retrieve the active chain
-  const chain = useChain();
+  const { chain, chains } = useNetwork();
 
   // State variables
   const [openModal, setOpenModal] = useState(false);
@@ -69,26 +59,8 @@ export default function ApproveModalPage() {
         activeChainName?.includes("optimism goerli testnet") &&
         secondChainName.includes("sepolia")
       ) {
-        newSpender = Optimism_to_Eth_Sepolia_SourceChainSender;
-        newApproveContract = Optimism_Approve_contract;
-      } else if (
-        activeChainName?.includes("bsc testnet") &&
-        secondChainName.includes("sepolia")
-      ) {
         newSpender = BSC_Testnet_to_Eth_Sepolia_SourceChainSender;
         newApproveContract = BSC_Testnet_Approve_contract;
-      } else if (
-        activeChainName?.includes("base goerli") &&
-        secondChainName.includes("sepolia")
-      ) {
-        newSpender = Base_Goerli_to_Eth_Sepolia_SourceChainSender;
-        newApproveContract = Base_Goerli_Approve_contract;
-      } else if (
-        activeChainName?.includes("avalanche fuji") &&
-        secondChainName.includes("sepolia")
-      ) {
-        newSpender = Avalanche_Fuji_to_Eth_Sepolia_SourceChainSender;
-        newApproveContract = Avalanche_Fuji_Approve_contract;
       } else {
         console.log("Wrong network");
       }
@@ -99,36 +71,22 @@ export default function ApproveModalPage() {
   }, [activeChain, secondChain]);
 
   // Contract hooks
-  const { contract } = useContract(`${approve_contract}`);
-  const { mutateAsync: approve, isLoading } = useContractWrite(
-    contract,
-    "approve"
-  );
-  // Function to handle contract call
-  const call = async () => {
-    try {
-      setLoading(true);
-      const valueInWei = ethers.utils.parseUnits(_value, "ether");
-      const data = await approve({ args: [spender, valueInWei] });
-      console.info("contract call success", data);
-      toast.success("Transaction successful!");
-      setOpenModal(false);
-    } catch (err) {
-      console.error("contract call failure", err);
-      toast.error(`Transaction failed: ${err}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-  // console.log("contract", contract);
-  // console.log("approve_contract", approve_contract);
+  const valueInWei = ethers.utils.parseUnits(_value, "ether");
+
+  const { config } = usePrepareContractWrite({
+    address: `${approve_contract}`,
+    abi: null,
+    functionName: "approve",
+    args: [spender, valueInWei],
+  });
+  const { data, isSuccess, write } = useContractWrite(config);
 
   // Render component
   return (
     <div>
       {/* Button to open the modal */}
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
-        <MediaRenderer src={chain?.icon?.url} />
+        {/* <MediaRenderer src={chain?.icon?.url} /> */}
         <h4>Approve</h4>{" "}
       </button>
       {/* Tooltip for additional information */}
@@ -173,7 +131,7 @@ export default function ApproveModalPage() {
             <div>
               <button
                 className={styles.approveBtn}
-                onClick={call}
+                onClick={write}
                 disabled={loading}
               >
                 {loading ? <Spinner /> : " Approve Token"}

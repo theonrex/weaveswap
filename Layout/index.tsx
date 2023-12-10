@@ -1,46 +1,14 @@
 import { Inter } from "next/font/google";
-import {
-  ThirdwebProvider,
-  metamaskWallet,
-  coinbaseWallet,
-  walletConnect,
-  safeWallet,
-  localWallet,
-  trustWallet,
-} from "@thirdweb-dev/react";
-import { selectActiveChain } from "@/redux/features/activeChain";
+
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Navbar from "@/components/nav/navbar";
 import FooterBody from "@/components/footer/Footer";
 import Head from "next/head";
-import { Sepolia, Mumbai } from "@thirdweb-dev/chains";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const currentChain = useSelector(selectActiveChain);
-
   return (
-    <ThirdwebProvider
-      activeChain={Mumbai}
-      clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
-      supportedWallets={[
-        metamaskWallet(),
-        coinbaseWallet({ recommended: true }),
-        walletConnect(),
-        safeWallet({
-          recommended: true,
-          personalWallets: [
-            metamaskWallet(),
-            coinbaseWallet({ recommended: true }),
-            walletConnect(),
-            localWallet(),
-            trustWallet({ recommended: true }),
-          ],
-        }),
-        localWallet(),
-
-        trustWallet({ recommended: true }),
-      ]}
-    >
+    <div>
       <Head>
         <title>WeaveSwap - Unlock Seamless Cross-Chain Swaps</title>
 
@@ -65,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Navbar />
       {children}
       <FooterBody />
-      <ToastContainer />
-    </ThirdwebProvider>
+      <ToastContainer />{" "}
+    </div>
   );
 }

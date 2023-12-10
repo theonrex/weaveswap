@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useChain, Chain } from "@thirdweb-dev/react";
 import { Dropdown } from "flowbite-react";
-import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
+import { bscTestnet, polygonMumbai } from "wagmi/chains";
 import styles from "./dropdown.module.css";
 
 export default function TokensDropdown() {
@@ -35,28 +28,16 @@ export default function TokensDropdown() {
       >
         {/* Individual items in the dropdown for each blockchain network */}
         <Dropdown.Item
-          value="Sepolia"
-          onClick={() => handleSelectChange(Sepolia.chain)}
+          value="Binance"
+          onClick={() => handleSelectChange(bscTestnet.name)}
         >
           Link
         </Dropdown.Item>
         <Dropdown.Item
           value="Mumbai"
-          onClick={() => handleSelectChange(Mumbai.chain)}
+          onClick={() => handleSelectChange(polygonMumbai.name)}
         >
           Mumbai
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="AvalancheFuji"
-          onClick={() => handleSelectChange(AvalancheFuji.chain)}
-        >
-          <h4> AvalancheFuji</h4>{" "}
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="BaseGoerli"
-          onClick={() => handleSelectChange(BaseGoerli.chain)}
-        >
-          OptimismGoerli
         </Dropdown.Item>
       </Dropdown>
     </div>

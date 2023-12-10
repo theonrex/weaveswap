@@ -1,5 +1,5 @@
 import React from "react";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styles from "./index.module.css";
 import Link from "next/link";
 export default function Navbar() {
@@ -23,11 +23,7 @@ export default function Navbar() {
         </Link>
 
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <ConnectWallet
-            theme={"dark"}
-            modalTitle={"weaveswap"}
-            modalSize={"wide"}
-          />
+          <ConnectButton />
           <button
             data-collapse-toggle="navbar-solid-bg"
             type="button"

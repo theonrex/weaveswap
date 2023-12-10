@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useChain, Chain } from "@thirdweb-dev/react";
 import { Dropdown } from "flowbite-react";
-import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
+import { bscTestnet, polygonMumbai } from "wagmi/chains";
 
 export default function NetworkDropdown() {
   // Custom hook to get information about the current blockchain network
@@ -33,39 +26,17 @@ export default function NetworkDropdown() {
         dismissOnClick={false}
       >
         {/* Individual items in the dropdown for each blockchain network */}
-        <Dropdown.Item
-          value="Sepolia"
-          onClick={() => handleSelectChange(Sepolia.name)}
-        >
-          Sepolia
-        </Dropdown.Item>
+
         <Dropdown.Item
           value="Mumbai"
-          onClick={() => handleSelectChange(Mumbai.name)}
+          onClick={() => handleSelectChange(polygonMumbai.name)}
         >
           Mumbai
         </Dropdown.Item>
-        <Dropdown.Item
-          value="AvalancheFuji"
-          onClick={() => handleSelectChange(AvalancheFuji.name)}
-        >
-          AvalancheFuji
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="BaseGoerli"
-          onClick={() => handleSelectChange(BaseGoerli.name)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>
-        <Dropdown.Item
-          value="OptimismGoerli"
-          onClick={() => handleSelectChange(OptimismGoerli.name)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>
+
         <Dropdown.Item
           value="BinanceTestnet"
-          onClick={() => handleSelectChange(BinanceTestnet.name)}
+          onClick={() => handleSelectChange(bscTestnet.name)}
         >
           BinanceTestnet
         </Dropdown.Item>

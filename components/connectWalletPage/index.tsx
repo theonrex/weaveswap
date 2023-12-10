@@ -2,7 +2,7 @@ import React from "react";
 import DeployImg from "../../assets/png/deloy.png";
 import Image from "next/image";
 import styles from "./connectWallet.module.css";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function ConnectWalletPage() {
   return (
@@ -14,7 +14,7 @@ export default function ConnectWalletPage() {
       <p>Please connect your wallet to see to be to swap on Weave</p>
 
       <div className={styles.ConnectWallet}>
-        <ConnectWallet />
+        <ConnectButton />
       </div>
     </div>
   );

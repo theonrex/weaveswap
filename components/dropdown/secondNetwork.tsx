@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useSwitchChain, useChain } from "@thirdweb-dev/react";
 import { Dropdown } from "flowbite-react";
-import {
-  Sepolia,
-  OptimismGoerli,
-  BinanceTestnet,
-  BaseGoerli,
-  AvalancheFuji,
-  Mumbai,
-} from "@thirdweb-dev/chains";
+import { bscTestnet, polygonMumbai } from "wagmi/chains";
 
 export default function SecondNetworkDropdown() {
   const switchChain = useSwitchChain();
@@ -23,38 +16,14 @@ export default function SecondNetworkDropdown() {
         dismissOnClick={false}
       >
         <Dropdown.Item
-          value="Sepolia"
-          onClick={() => switchChain(Sepolia.chainId)}
-        >
-          Sepolia
-        </Dropdown.Item>{" "}
-        <Dropdown.Item
           value="Mumbai"
-          onClick={() => switchChain(Mumbai.chainId)}
+          onClick={() => switchChain(polygonMumbai.id)}
         >
           Mumbai
         </Dropdown.Item>{" "}
         <Dropdown.Item
-          value="AvalancheFuji"
-          onClick={() => switchChain(AvalancheFuji.chainId)}
-        >
-          AvalancheFuji
-        </Dropdown.Item>{" "}
-        <Dropdown.Item
-          value="BaseGoerli"
-          onClick={() => switchChain(BaseGoerli.chainId)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>{" "}
-        <Dropdown.Item
-          value="OptimismGoerli"
-          onClick={() => switchChain(OptimismGoerli.chainId)}
-        >
-          OptimismGoerli
-        </Dropdown.Item>{" "}
-        <Dropdown.Item
           value="BinanceTestnet"
-          onClick={() => switchChain(BinanceTestnet.chainId)}
+          onClick={() => switchChain(bscTestnet.id)}
         >
           BinanceTestnet
         </Dropdown.Item>
