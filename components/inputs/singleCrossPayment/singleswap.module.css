@@ -22,6 +22,14 @@
   margin-bottom: 0.9em;
 }
 
+.disabled {
+  background-color: rgb(34, 34, 34);
+  width: 100%;
+  padding: 1em 2em;
+  margin: 1em auto;
+  border-radius: 0.5em;
+}
+
 .swapInputBody .swapInput {
   background-color: transparent !important;
   border: none !important;

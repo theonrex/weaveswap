@@ -39,7 +39,10 @@
   font-size: 0.6em;
   color: white;
 }
-
+.ModalHeader h4,
+.ModalHeader span {
+  color: white;
+}
 .ModalHeader h2 {
   color: antiquewhite;
 }
@@ -85,6 +88,14 @@
 
 .approveBtn {
   background-color: rgb(101, 226, 43);
+  width: 100%;
+  padding: 1em 2em;
+  margin: 1em auto;
+  border-radius: 0.5em;
+}
+
+.disabled {
+  background-color: rgb(34, 34, 34);
   width: 100%;
   padding: 1em 2em;
   margin: 1em auto;

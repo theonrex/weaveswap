@@ -1,99 +1,116 @@
 // Import necessary libraries and components
 import React, { useState, useEffect } from "react";
 import styles from "./approve.module.css";
-import { useContractRead } from "wagmi";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useContractWrite } from "wagmi";
 import {
-  //mumbai to sepolia
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
-  //sepolia to mumbai
-  // BSC_Testnet _to_Eth_Sepolia -> Eth_Sepolia
   BSC_Testnet_to_Eth_Sepolia_SourceChainSender,
   BSC_Testnet_Approve_contract,
 } from "@/constants/address";
 import { Tooltip, Modal } from "flowbite-react";
-import { useSelector } from "react-redux";
-import { selectActiveChain } from "@/redux/features/activeChain";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ethers } from "ethers";
 import { Spinner } from "flowbite-react";
 import { useNetwork } from "wagmi";
+import {
+  PolygonMumbaiAlowanceABi,
+  BSC_Testnet_to_Eth_Sepolia_SourceChainSenderABI,
+} from "@/constants/ABI/allowance";
 
 // Main component
 export default function ApproveModalPage() {
   // Retrieve the active chain
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
 
   // State variables
   const [openModal, setOpenModal] = useState(false);
-  const [_value, setValue] = useState<string>("0.0008");
+  const [amount, setAmount] = useState<number>(0);
   const [spender, setSpender] = useState("");
-  const [approve_contract, setApprove_contract] = useState("");
+  const [approve_contract, setApproveContract] = useState("");
   const [loading, setLoading] = useState(false);
+  const [allowanceAbi, setAllowanceAbi] = useState<any>();
 
-  // Selectors for active and second chains
-  const activeChain = useSelector(selectActiveChain);
-  const secondChain = localStorage.getItem("secondChain");
-
-  // Effect to determine spender and approval contract based on active and second chains
+  // Effect to determine spender and approval contract based on the active chain
   useEffect(() => {
-    console.log("Checking receiver on chains:", activeChain?.name, secondChain);
+    if (chain?.name) {
+      const activeChainName = chain?.name.trim();
 
-    let newSpender = "";
-    let newApproveContract = "";
-
-    if (activeChain && secondChain) {
-      const activeChainName = activeChain?.name?.toLowerCase();
-      const secondChainName = secondChain.toLowerCase();
-
-      if (
-        activeChainName?.includes("mumbai") &&
-        secondChainName?.includes("sepolia")
-      ) {
-        newApproveContract = Mumbai_Approve_contract;
-
-        newSpender = Polygon_Mumbai_SourceChainSender;
-      } else if (
-        activeChainName?.includes("optimism goerli testnet") &&
-        secondChainName.includes("sepolia")
-      ) {
-        newSpender = BSC_Testnet_to_Eth_Sepolia_SourceChainSender;
-        newApproveContract = BSC_Testnet_Approve_contract;
+      if (activeChainName.includes("Polygon Mumbai")) {
+        setApproveContract(Mumbai_Approve_contract);
+        setSpender(Polygon_Mumbai_SourceChainSender);
+        setAllowanceAbi(PolygonMumbaiAlowanceABi);
+      } else if (activeChainName.includes("Binance Smart Chain Testnet")) {
+        setSpender(BSC_Testnet_to_Eth_Sepolia_SourceChainSender);
+        setApproveContract(BSC_Testnet_Approve_contract);
+        setAllowanceAbi(BSC_Testnet_to_Eth_Sepolia_SourceChainSenderABI);
       } else {
         console.log("Wrong network");
       }
     }
+  }, [chain]);
 
-    setSpender(newSpender);
-    setApprove_contract(newApproveContract);
-  }, [activeChain, secondChain]);
+  // Contract hooks allowanceAbi
+  const _valueString = amount;
 
-  // Contract hooks
-  const valueInWei = ethers.utils.parseUnits(_value, "ether");
+  let _value: ethers.BigNumber = ethers.BigNumber.from(0);
+  if (_valueString && !isNaN(Number(_valueString))) {
+    const numericValue = Number(_valueString);
+    _value = ethers.utils.parseUnits(numericValue.toString(), "ether");
+  } else {
+    console.error("Invalid amount input:", _valueString);
+  }
+  const handleTransactionResult = (result: string) => {
+    if (result) {
+      // Transaction initiated successfully
+      toast.info("Transaction initiated. Please wait for confirmation.");
+    } else if (isSuccess) {
+      toast.success("Transaction initiated. Please wait for confirmation.");
+    } else {
+      // Transaction failed
+      toast.error("Transaction failed. Please try again.");
+    }
+  };
+  const _spender = spender;
 
-  const { config } = usePrepareContractWrite({
-    address: `${approve_contract}`,
-    abi: null,
+  const { isLoading, isSuccess, isError, write } = useContractWrite({
+    address: `${approve_contract}` as `0x${string}`,
+    abi: allowanceAbi,
     functionName: "approve",
-    args: [spender, valueInWei],
+    args: [_spender, _value],
+    onError: (isError) => {
+      console.error("Error during transaction:", isError);
+      toast(`Transaction failed. Please try again. ${isError.message}`);
+      setLoading(false);
+    },
   });
-  const { data, isSuccess, write } = useContractWrite(config);
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setOpenModal(false);
+      // Reset state when modal is closed
+      setAmount(0);
+    }
+    if (isSuccess) {
+      setOpenModal(false);
+      toast(`Transaction Successful.`);
+      setAmount(0);
+    }
+  }, [isSuccess, isError]);
 
   // Render component
   return (
     <div>
       {/* Button to open the modal */}
       <button onClick={() => setOpenModal(true)} className={styles.activeChain}>
-        {/* <MediaRenderer src={chain?.icon?.url} /> */}
         <h4>Approve</h4>{" "}
       </button>
       {/* Tooltip for additional information */}
       <div className={styles.Tooltip_body}>
         <Tooltip
           className={styles.Tooltip}
-          content="As per the ERC-20 protocol, a standard developed by the official Ethereum team, users engaging in swap or cross-chain bridge services (e.g., Uniswap, Rhino, Sushiswap) will encounter an approval window when trading ERC-20 tokens. This authorization step ensures adherence to protocol standards and facilitates secure and standardized token transactions. "
+          content="As per the ERC-20 protocol, a standard developed by the official Ethereum team, users engaging in swap or cross-chain bridge services (e.g., Uniswap, Rhino, Sushiswap) will encounter an approval window when trading ERC-20 tokens. This authorization step ensures adherence to protocol standards and facilitates secure and standardized token transactions."
           arrow={false}
         >
           <div className={styles.whyApprove}> Why Approve?</div>
@@ -107,10 +124,6 @@ export default function ApproveModalPage() {
       >
         <Modal.Header className={styles.ModalHeader}>
           <span> Approve</span>
-          <p>
-            Select a chain from our default list or search for a token by symbol
-            or address.
-          </p>
         </Modal.Header>
         <Modal.Body className={styles.ModalBody}>
           <div className={styles.crossInputBody}>
@@ -120,21 +133,59 @@ export default function ApproveModalPage() {
                 You Pay
               </label>
               <input
-                type="text"
                 name="quantity"
-                defaultValue={_value}
-                onChange={(e) => setValue(e.target.value)}
+                defaultValue={amount}
+                onChange={(e) => setAmount(parseFloat(e.target.value))}
                 className={styles.swapInput}
               />
             </div>
             {/* Button to trigger contract call */}
             <div>
               <button
-                className={styles.approveBtn}
-                onClick={write}
-                disabled={loading}
+                className={
+                  amount === 0 ||
+                  isNaN(amount) ||
+                  amount === null ||
+                  amount === undefined
+                    ? styles.disabled
+                    : styles.approveBtn
+                }
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    // Manually invoke the write function
+                    await write();
+
+                    // Check if the transaction was successful and close the modal
+                    if (isSuccess) {
+                      setOpenModal(false);
+                      // Reset state when modal is closed
+                      setAmount(0);
+                    }
+
+                    console.log("Transaction completed successfully");
+                  } catch (error: any) {
+                    if (error?.name === "AbortError") {
+                      console.warn("Transaction canceled by the user");
+                    } else {
+                      console.error("Error during transaction:", error);
+                      toast.error(
+                        `Transaction failed. Please try again. ${error.message}`
+                      );
+                    }
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                disabled={
+                  loading ||
+                  amount === 0 ||
+                  isNaN(amount) ||
+                  amount === null ||
+                  amount === undefined
+                }
               >
-                {loading ? <Spinner /> : " Approve Token"}
+                {isLoading ? <Spinner /> : "Approve Token"}
               </button>
             </div>
           </div>

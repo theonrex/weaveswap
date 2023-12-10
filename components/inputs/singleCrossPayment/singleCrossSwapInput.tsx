@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import TokensDropdown from "../../dropdown/tokensDropdown";
 import styles from "./singleswap.module.css";
-import { useContractRead } from "wagmi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
-
+import { ethers } from "ethers";
 import {
   Polygon_Mumbai_SourceChainSender,
   Mumbai_Approve_contract,
@@ -18,16 +17,15 @@ import {
 } from "@/constants/ABI/allowance";
 import ApproveModalPage from "@/components/modal/approve/approveModal";
 import { Tooltip } from "flowbite-react";
-import { useSelector } from "react-redux";
-import { selectActiveChain } from "@/redux/features/activeChain";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAccount } from "wagmi";
-import { useNetwork } from "wagmi";
+import { useNetwork, useAccount, useContractRead } from "wagmi";
 import {
   Polygon_Mumbai_SourceChainSenderAbi,
   BSC_Testnet_SourceChainSenderAbi,
 } from "@/constants/ABI/sourceChainAbi";
+import { Spinner } from "flowbite-react";
+
 export default function SingleCrossSwapInput() {
   // Check if the code is running on the client side
   const { address, isConnecting, isDisconnected } = useAccount();
@@ -40,16 +38,22 @@ export default function SingleCrossSwapInput() {
   const [getFunderBalanceNumber, setGetFunderBalanceNumber] = useState<
     number | undefined
   >(undefined);
-  const [amount, setAmount] = useState<number>();
-  const [_value, setValue] = useState(0.0);
-  const [destinationState, setDestinationState] = useState("");
-  const [chainReceiver, setChainReceiver] = useState("");
-  const [allowanceCheckContract, setAllowanceCheckContract] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [checkSourceChain, setCheckSourceChain] = useState("");
-  const [allowanceAbi, setAllowanceAbi] = useState({});
-  const [sourceChainAbi, setSourceChainAbi] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState<number>(0);
+  const [chainReceiver, setChainReceiver] = useState<string | undefined>();
+  const [destinationState, setDestinationState] = useState<string | undefined>(
+    undefined
+  );
+
+  const [allowanceCheckContract, setAllowanceCheckContract] = useState<
+    string | undefined
+  >();
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [checkSourceChain, setCheckSourceChain] = useState<
+    string | undefined
+  >();
+  const [allowanceAbi, setAllowanceAbi] = useState<any>();
+  const [sourceChainAbi, setSourceChainAbi] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   // const address = useAddress();
   const _owner = address;
@@ -61,8 +65,6 @@ export default function SingleCrossSwapInput() {
   const secondChain = isClient ? localStorage.getItem("secondChain") : "";
 
   useEffect(() => {
-    console.log("activeChain", activeChain?.name);
-    console.log("secondChain", secondChain);
     if (
       activeChain?.name?.includes("Mumbai") &&
       secondChain?.includes("Sepolia")
@@ -89,45 +91,40 @@ export default function SingleCrossSwapInput() {
     }
   }, [activeChain, secondChain]);
   const _spender = checkSourceChain;
+
+  const _valueString = amount;
+
+  let _value: ethers.BigNumber = ethers.BigNumber.from(0);
+  if (_valueString && !isNaN(Number(_valueString))) {
+    const numericValue = Number(_valueString);
+    _value = ethers.utils.parseUnits(numericValue.toString(), "ether");
+  } else {
+    console.error("Invalid amount input:", _valueString);
+  }
+
   //read contracts
   //allowance
-  const {
-    data: allowanceData,
-    isError,
-    isLoading,
-  } = useContractRead({
-    address: allowanceCheckContract,
+  const { data: allowanceData } = useContractRead({
+    address: allowanceCheckContract as `0x${string}`,
     abi: allowanceAbi,
     functionName: "allowance",
     args: [_owner, _spender],
   });
 
   const { data: getFunderBalance } = useContractRead({
-    address: checkSourceChain,
+    address: checkSourceChain as `0x${string}`,
     abi: sourceChainAbi,
     functionName: "getFunderBalance",
     args: [funder],
   });
-  console.log("allowanceCheckContract", allowanceCheckContract);
-  console.log("allowanceAbi", allowanceAbi);
-  console.log("_owner", _owner);
-  console.log("checkSourceChain", checkSourceChain);
-  console.log("getFunderBalance", getFunderBalance?.toString());
+
   //write contracts
 
-  const { config } = usePrepareContractWrite({
-    address: checkSourceChain,
-    abi: sourceChainAbi,
-    functionName: "fund",
-    args: [amount],
-  });
-  const { data, isSuccess, write: fundContract } = useContractWrite(config);
-
   const { config: sendMessage } = usePrepareContractWrite({
-    address: checkSourceChain,
+    address: checkSourceChain as `0x${string}`,
     abi: sourceChainAbi,
     functionName: "sendMessage",
-    args: [destinationState, chainReceiver, feeToken, to, amount],
+    args: [destinationState, chainReceiver, feeToken, to, _value],
   });
   const {
     data: callSendMessageData,
@@ -136,6 +133,19 @@ export default function SingleCrossSwapInput() {
     write: callSendMessage,
   } = useContractWrite(sendMessage);
 
+  const { config } = usePrepareContractWrite({
+    address: checkSourceChain as `0x${string}`,
+    abi: sourceChainAbi,
+    functionName: "fund",
+    args: [_value],
+  });
+  const {
+    data,
+    isLoading,
+    isSuccess,
+    isError,
+    write: fundContract,
+  } = useContractWrite(config);
   useEffect(() => {
     const ethers = require("ethers");
     if (allowanceData) {
@@ -154,11 +164,24 @@ export default function SingleCrossSwapInput() {
       console.error("allowanceData._hex is undefined");
     }
   }, [formattedNumber, _owner, checkSourceChain, getFunderBalanceNumber]);
-  console.log("formattedNumber", formattedNumber);
-  console.log("getFunderBalanceNumber", getFunderBalanceNumber);
-  console.log("amount", amount);
-  console.log("allowanceData", allowanceData);
-  console.log("amount", amount);
+
+  useEffect(() => {
+    if (isError) {
+      const errorMessage =
+        typeof isError === "object"
+          ? (isError as { message?: string }).message
+          : undefined;
+      toast(`Transaction failed. Please try again. ${errorMessage}`);
+    } else {
+      // Handle other cases or leave it empty if no specific handling is needed
+    }
+
+    if (isSuccess) {
+      toast(`Transaction Successful.`);
+      setAmount(0);
+    }
+  }, [isSuccess, isError]);
+
   return (
     <div>
       <div className={styles.crossInputBody}>
@@ -189,31 +212,51 @@ export default function SingleCrossSwapInput() {
             formattedNumber >= amount ? (
               <div>
                 <button
-                  className={styles.crossChainBtn}
+                  className={
+                    amount === 0 ||
+                    isNaN(amount) ||
+                    amount === null ||
+                    amount === undefined
+                      ? styles.disabled
+                      : styles.crossChainBtn
+                  }
                   onClick={callSendMessage}
                   disabled={loading}
                 >
-                  Swap
+                  {isLoading ? <Spinner /> : " Swap"}
                 </button>
               </div>
             ) : (
               <div>
                 {getFunderBalanceNumber && getFunderBalanceNumber >= amount ? (
                   <button
-                    className={styles.crossChainBtn}
+                    className={
+                      amount === 0 ||
+                      isNaN(amount) ||
+                      amount === null ||
+                      amount === undefined
+                        ? styles.disabled
+                        : styles.crossChainBtn
+                    }
                     onClick={callSendMessage}
                     disabled={loading}
                   >
-                    Swap
+                    {isLoading ? <Spinner /> : " Swap"}
                   </button>
                 ) : formattedNumber && formattedNumber >= amount ? (
                   <div>
                     <button
                       className={styles.crossChainBtn}
                       onClick={fundContract}
-                      disabled={loading}
+                      disabled={
+                        loading ||
+                        amount === 0 ||
+                        isNaN(amount) ||
+                        amount === null ||
+                        amount === undefined
+                      }
                     >
-                      Fund
+                      {isLoading ? <Spinner /> : " Fund"}
                     </button>
                     <div className={styles.Tooltip_body}>
                       <Tooltip
