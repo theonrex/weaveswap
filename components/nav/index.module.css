@@ -17,7 +17,8 @@
 }
 
 .Navbar ul li a:hover {
-  background-color: greenyellow;
+  background-color: rgba(172, 255, 47, 0);
+  color: white;
 }
 
 .Navbar ul li a:active {

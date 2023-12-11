@@ -38,7 +38,7 @@ export default function SingleCrossSwapInput() {
   const [getFunderBalanceNumber, setGetFunderBalanceNumber] = useState<
     number | undefined
   >(undefined);
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(1);
   const [chainReceiver, setChainReceiver] = useState<string | undefined>();
   const [destinationState, setDestinationState] = useState<string | undefined>(
     undefined
@@ -120,32 +120,70 @@ export default function SingleCrossSwapInput() {
 
   //write contracts
 
-  const { config: sendMessage } = usePrepareContractWrite({
-    address: checkSourceChain as `0x${string}`,
-    abi: sourceChainAbi,
-    functionName: "sendMessage",
-    args: [destinationState, chainReceiver, feeToken, to, _value],
-  });
+  // const { config: sendMessage } = usePrepareContractWrite({
+  //   address: checkSourceChain as `0x${string}`,
+  //   abi: sourceChainAbi,
+  //   functionName: "sendMessage",
+  //   args: [destinationState, chainReceiver, feeToken, to, _value],
+  // });
+  // const {
+  //   data: callSendMessageData,
+  //   isLoading: callSendMessageLoading,
+  //   isSuccess: callSendMessageSuccess,
+  //   write: callSendMessage,
+  //   isError: callSendMessageError,
+  // } = useContractWrite(sendMessage);
+
   const {
     data: callSendMessageData,
     isLoading: callSendMessageLoading,
     isSuccess: callSendMessageSuccess,
     write: callSendMessage,
-  } = useContractWrite(sendMessage);
-
-  const { config } = usePrepareContractWrite({
+    isError: callSendMessageError,
+  } = useContractWrite({
     address: checkSourceChain as `0x${string}`,
     abi: sourceChainAbi,
-    functionName: "fund",
-    args: [_value],
+    functionName: "sendMessage",
+    args: [destinationState, chainReceiver, feeToken, to, _value],
+    onError: (isError) => {
+      console.error("Error during transaction:", isError);
+      toast(`Transaction failed. Please try again. ${isError.message}`);
+      setLoading(false);
+    },
   });
+
   const {
     data,
     isLoading,
     isSuccess,
     isError,
     write: fundContract,
-  } = useContractWrite(config);
+  } = useContractWrite({
+    address: checkSourceChain as `0x${string}`,
+    abi: sourceChainAbi,
+    functionName: "fund",
+    args: [_value],
+    onError: (isError) => {
+      console.error("Error during transaction:", isError);
+      toast(`Transaction failed. Please try again. ${isError.message}`);
+      setLoading(false);
+    },
+  });
+
+  // const { config } = usePrepareContractWrite({
+  //   address: checkSourceChain as `0x${string}`,
+  //   abi: sourceChainAbi,
+  //   functionName: "fund",
+  //   args: [_value],
+  // });
+  // const {
+  //   data,
+  //   isLoading,
+  //   isSuccess,
+  //   isError,
+  //   write: fundContract,
+  // } = useContractWrite(config);
+
   useEffect(() => {
     const ethers = require("ethers");
     if (allowanceData) {
@@ -153,20 +191,23 @@ export default function SingleCrossSwapInput() {
       const formatted = ethers.utils.formatUnits(bigNumber, 6);
       setFormattedNumber(formatted);
     } else {
-      console.error("allowanceData._hex is undefined");
+      console.error("allowanceData is undefined");
     }
+
+    console.log(allowanceData);
 
     if (getFunderBalance) {
       const bigNumber = ethers.BigNumber.from(getFunderBalance);
       const formattedFunderBalance = ethers.utils.formatUnits(bigNumber, 6);
       setGetFunderBalanceNumber(formattedFunderBalance);
     } else {
-      console.error("allowanceData._hex is undefined");
+      console.error("getFunderBalance is undefined");
     }
   }, [formattedNumber, _owner, checkSourceChain, getFunderBalanceNumber]);
+  console.log(getFunderBalanceNumber);
 
   useEffect(() => {
-    if (isError) {
+    if (isError || callSendMessageError) {
       const errorMessage =
         typeof isError === "object"
           ? (isError as { message?: string }).message
@@ -176,11 +217,16 @@ export default function SingleCrossSwapInput() {
       // Handle other cases or leave it empty if no specific handling is needed
     }
 
-    if (isSuccess) {
-      toast(`Transaction Successful.`);
+    if (isSuccess || callSendMessageSuccess) {
+      toast.success(`Transaction Successful.`);
       setAmount(0);
     }
   }, [isSuccess, isError]);
+  useEffect(() => {
+    formattedNumber;
+    getFunderBalanceNumber;
+    amount;
+  }, []);
 
   return (
     <div>
@@ -220,10 +266,36 @@ export default function SingleCrossSwapInput() {
                       ? styles.disabled
                       : styles.crossChainBtn
                   }
-                  onClick={callSendMessage}
-                  disabled={loading}
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      // Manually invoke the write function
+                      await callSendMessage();
+
+                      // Check if the transaction was successful and close the modal
+                      if (callSendMessageSuccess) {
+                        toast.success(`Transaction Successful.`);
+                        // Reset state when modal is closed
+                        setAmount(0);
+                      }
+
+                      console.log("Transaction completed successfully");
+                    } catch (error: any) {
+                      if (error?.name === "AbortError") {
+                        console.warn("Transaction canceled by the user");
+                      } else {
+                        console.error("Error during transaction:", error);
+                        toast.error(
+                          `Transaction failed. Please try again. ${error.message}`
+                        );
+                      }
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={callSendMessageLoading}
                 >
-                  {isLoading ? <Spinner /> : " Swap"}
+                  {callSendMessageLoading ? <Spinner /> : " Swap"}
                 </button>
               </div>
             ) : (
@@ -238,16 +310,70 @@ export default function SingleCrossSwapInput() {
                         ? styles.disabled
                         : styles.crossChainBtn
                     }
-                    onClick={callSendMessage}
-                    disabled={loading}
+                    onClick={async () => {
+                      try {
+                        setLoading(true);
+                        // Manually invoke the write function
+                        await callSendMessage();
+
+                        // Check if the transaction was successful and close the modal
+                        if (callSendMessageSuccess) {
+                          toast.success(`Transaction Successful.`);
+
+                          // Reset state when modal is closed
+                          setAmount(0);
+                        }
+
+                        console.log("Transaction completed successfully");
+                      } catch (error: any) {
+                        if (error?.name === "AbortError") {
+                          console.warn("Transaction canceled by the user");
+                        } else {
+                          console.error("Error during transaction:", error);
+                          toast.error(
+                            `Transaction failed. Please try again. ${error.message}`
+                          );
+                        }
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    disabled={callSendMessageLoading}
                   >
-                    {isLoading ? <Spinner /> : " Swap"}
+                    {callSendMessageLoading ? <Spinner /> : " Swap"}
                   </button>
                 ) : formattedNumber && formattedNumber >= amount ? (
                   <div>
                     <button
                       className={styles.crossChainBtn}
-                      onClick={fundContract}
+                      onClick={async () => {
+                        try {
+                          setLoading(true);
+                          // Manually invoke the write function
+                          await fundContract();
+
+                          // Check if the transaction was successful and close the modal
+                          if (isSuccess) {
+                            toast.success(`Transaction Successful.`);
+
+                            // Reset state when modal is closed
+                            setAmount(0);
+                          }
+
+                          console.log("Transaction completed successfully");
+                        } catch (error: any) {
+                          if (error?.name === "AbortError") {
+                            console.warn("Transaction canceled by the user");
+                          } else {
+                            console.error("Error during transaction:", error);
+                            toast.error(
+                              `Transaction failed. Please try again. ${error.message}`
+                            );
+                          }
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
                       disabled={
                         loading ||
                         amount === 0 ||
