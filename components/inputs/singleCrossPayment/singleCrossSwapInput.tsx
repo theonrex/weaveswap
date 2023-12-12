@@ -25,8 +25,11 @@ import {
   BSC_Testnet_SourceChainSenderAbi,
 } from "@/constants/ABI/sourceChainAbi";
 import { Spinner } from "flowbite-react";
+import { useRouter } from "next/router";
 
 export default function SingleCrossSwapInput() {
+  const router = useRouter();
+
   // Check if the code is running on the client side
   const { address, isConnecting, isDisconnected } = useAccount();
   const { chain, chains } = useNetwork();
@@ -63,7 +66,22 @@ export default function SingleCrossSwapInput() {
   const to = address;
   const activeChain = chain;
   const secondChain = isClient ? localStorage.getItem("secondChain") : "";
+  // useEffect to listen for changes in the wallet address and trigger a refresh
+  useEffect(() => {
+    if (address && isClient) {
+      const handleAddressChange = () => {
+        window.location.reload(); // Perform a full page refresh
+      };
 
+      // Attach the event listener to detect changes in the wallet address
+      window.ethereum.on("accountsChanged", handleAddressChange);
+
+      // Cleanup the event listener when the component is unmounted
+      return () => {
+        window.ethereum.off("accountsChanged", handleAddressChange);
+      };
+    }
+  }, [address]);
   useEffect(() => {
     if (
       activeChain?.name?.includes("Mumbai") &&
@@ -94,7 +112,7 @@ export default function SingleCrossSwapInput() {
 
   const _valueString = amount;
 
-  let _value: ethers.BigNumber = ethers.BigNumber.from(0);
+  let _value: ethers.BigNumber = ethers.BigNumber.from(1);
   if (_valueString && !isNaN(Number(_valueString))) {
     const numericValue = Number(_valueString);
     _value = ethers.utils.parseUnits(numericValue.toString(), "ether");
@@ -219,7 +237,7 @@ export default function SingleCrossSwapInput() {
 
     if (isSuccess || callSendMessageSuccess) {
       toast.success(`Transaction Successful.`);
-      setAmount(0);
+      setAmount(1);
     }
   }, [isSuccess, isError]);
   useEffect(() => {
@@ -276,7 +294,7 @@ export default function SingleCrossSwapInput() {
                       if (callSendMessageSuccess) {
                         toast.success(`Transaction Successful.`);
                         // Reset state when modal is closed
-                        setAmount(0);
+                        setAmount(1);
                       }
 
                       console.log("Transaction completed successfully");
@@ -321,7 +339,7 @@ export default function SingleCrossSwapInput() {
                           toast.success(`Transaction Successful.`);
 
                           // Reset state when modal is closed
-                          setAmount(0);
+                          setAmount(1);
                         }
 
                         console.log("Transaction completed successfully");
@@ -357,7 +375,7 @@ export default function SingleCrossSwapInput() {
                             toast.success(`Transaction Successful.`);
 
                             // Reset state when modal is closed
-                            setAmount(0);
+                            setAmount(1);
                           }
 
                           console.log("Transaction completed successfully");
