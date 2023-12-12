@@ -342,7 +342,7 @@ export default function SingleCrossSwapInput() {
                           setAmount(1);
                         }
 
-                        console.log("Transaction completed successfully");
+                        console.log("Transaction completed successfully!");
                       } catch (error: any) {
                         if (error?.name === "AbortError") {
                           console.warn("Transaction canceled by the user");
